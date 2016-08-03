@@ -7,6 +7,7 @@ public class mapControl : MonoBehaviour {
 
     public int mapWidth;
     public int mapHeight;
+    public HashSet<GameObject> validHexes;
     public GameObject hexPrefab;
     //float offsetPortraitX = 0.746f;
     //float offsetPortraitY = 0.8642f;
@@ -15,8 +16,8 @@ public class mapControl : MonoBehaviour {
     public hexData[,] hexes;
     GameObject hoveredHex;
     public GameObject hexOutline;
+    public int Team0StartUnitAmount;
     public int Team1StartUnitAmount;
-    public int Team2StartUnitAmount;
     public List<GameObject> Team0Units;
     public List<GameObject> Team1Units;
     public int gamePhase;
@@ -38,34 +39,33 @@ public class mapControl : MonoBehaviour {
     void Awake () {
 
         globalMap = this;
-        hexes = new hexData[mapWidth, mapHeight];
+        hexes = new hexData[mapWidth + 2, mapHeight];
         GenerateMap();
         hexOutline = Instantiate((GameObject)Resources.Load("HexOutline"));
         hexOutline.transform.parent = transform;
-        Team0StartSquares = RectToHash(0,2,0,4);
-        Team1StartSquares = RectToHash(4, 6, 0, 4);
+        PopulateStartZones();
         turnAmount = 0;
         teamTurn = -1 ;
 
         gamePhase = 0; //0=Unit Placement, 1=Actual Game, 2=End??
-        for (int i = 0; i < Team1StartUnitAmount; i++)
+        for (int i = 0; i < Team0StartUnitAmount; i++)
         {
             GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
             Team0Units.Add(newUnit);
             AddRandomUnitType(newUnit);
             newUnit.name = "Unit: " + i;
             newUnit.GetComponent<unitData>().team = 0;
-            CreateOnHex(newUnit, RandomHexInBounds(0, 2, 0, 4));
+            CreateOnHex(newUnit, RandomHexInBounds(Team0StartSquares));
         }
 
-        for (int i = 0; i < Team2StartUnitAmount; i++)
+        for (int i = 0; i < Team1StartUnitAmount; i++)
         {
             GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
             Team1Units.Add(newUnit);
             AddRandomUnitType(newUnit);
             newUnit.name = "Enemy: " + i;
             newUnit.GetComponent<unitData>().team = 1;
-            CreateOnHex(newUnit, RandomHexInBounds(4, 6, 0, 4));
+            CreateOnHex(newUnit, RandomHexInBounds(Team1StartSquares));
             newUnit.GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
@@ -113,14 +113,43 @@ public class mapControl : MonoBehaviour {
         }
     }
 
-    GameObject RandomHexInBounds(int xMin,int xMax,int yMin, int yMax)
+    GameObject RandomHexInBounds(HashSet<GameObject> hexBound)
     { // Some Checking to do when i can be arsed. ie stop infinite loop if bound is full
-        GameObject currentHex;
-        do {
-            currentHex = hexes[Mathf.FloorToInt(Random.Range(xMin, xMax)), Mathf.FloorToInt(Random.Range(yMin, yMax))].gameObject;
+        GameObject[] tempArray = new GameObject[hexBound.Count];
+        hexBound.CopyTo(tempArray);
+
+        int rand = Random.Range(0, hexBound.Count);
+        while (tempArray[rand].GetComponent<hexData>().occupied)
+        {
+            rand = Random.Range(0, hexBound.Count);
         }
-        while (currentHex.GetComponent<hexData>().occupied == true);
-        return currentHex ;
+        return tempArray[rand];
+
+    }
+
+    void PopulateStartZones()
+    {
+        Team0StartSquares = new HashSet<GameObject>();
+        Team1StartSquares = new HashSet<GameObject>();
+
+        Team0StartSquares.Add(hexes[0, 0].gameObject); //RectToHash(0,2,0,4);
+        Team0StartSquares.Add(hexes[1, 0].gameObject); 
+        Team0StartSquares.Add(hexes[1, 1].gameObject); 
+        Team0StartSquares.Add(hexes[1, 2].gameObject); 
+        Team0StartSquares.Add(hexes[2, 1].gameObject); 
+        Team0StartSquares.Add(hexes[2, 2].gameObject);
+        Team0StartSquares.Add(hexes[2, 3].gameObject); 
+        Team0StartSquares.Add(hexes[3, 3].gameObject);
+
+        Team1StartSquares.Add(hexes[7, 3].gameObject); //RectToHash(4, 6, 0, 4);
+        Team1StartSquares.Add(hexes[6, 3].gameObject);
+        Team1StartSquares.Add(hexes[6, 2].gameObject);
+        Team1StartSquares.Add(hexes[6, 1].gameObject);
+        Team1StartSquares.Add(hexes[5, 2].gameObject);
+        Team1StartSquares.Add(hexes[5, 1].gameObject);
+        Team1StartSquares.Add(hexes[5, 0].gameObject);
+        Team1StartSquares.Add(hexes[4, 0].gameObject);
+
     }
 
     void CreateOnHex(GameObject unit, GameObject hex)
@@ -202,23 +231,43 @@ public class mapControl : MonoBehaviour {
 
     void GenerateMap()
     {
+        validHexes = new HashSet<GameObject>();
         for (int i = 0; i < mapHeight; i++)
         {
-            for (int j = 0; j < mapWidth; j++)
+            for (int j = 0; j < mapWidth + 1; j++)
             {
                 float yPosition = i * offsetY;
-                float xPosition = j * offsetX;
-                if (i % 2 == 1)
-                {
-                    xPosition += offsetX/2;
-                }
+                float xPosition = (j - 0.5f * i) * offsetX;
+                
                 hexes[j, i] = ((GameObject)Instantiate(hexPrefab, new Vector3(xPosition, yPosition, 0), Quaternion.identity)).GetComponent<hexData>();
                 hexes[j, i].gameObject.name = "Hex " + j + "," + i;
                 hexes[j, i].gameObject.transform.parent = transform;
                 hexes[j, i].myX = j;
                 hexes[j, i].myY = i;
+
+                validHexes.Add(hexes[j, i].gameObject);
             }
         }
+        //Exclusive to 4 x 6
+        validHexes.Remove(hexes[0, 1].gameObject);
+        validHexes.Remove(hexes[0, 2].gameObject);
+        validHexes.Remove(hexes[0, 3].gameObject);
+        validHexes.Remove(hexes[1, 3].gameObject);
+        Destroy(hexes[0, 1].gameObject);
+        Destroy(hexes[0, 2].gameObject);
+        Destroy(hexes[0, 3].gameObject);
+        Destroy(hexes[1, 3].gameObject);
+
+        validHexes.Remove(hexes[6, 0].gameObject);
+        Destroy(hexes[6, 0].gameObject);
+        hexes[7, 3] = ((GameObject)Instantiate(hexPrefab, new Vector3((7 - 0.5f * 3 )* offsetX, 3 * offsetY, 0), Quaternion.identity)).GetComponent<hexData>();
+        hexes[7, 3].gameObject.name = "Hex " + 7 + "," + 3;
+        hexes[7, 3].gameObject.transform.parent = transform;
+        hexes[7, 3].myX = 7;
+        hexes[7, 3].myY = 3;
+
+        validHexes.Add(hexes[7, 3].gameObject);
+
         Camera.main.transform.position = hexes[Mathf.FloorToInt(mapWidth / 2), Mathf.FloorToInt(mapHeight / 2)].gameObject.transform.position;
         Camera.main.transform.Translate(Vector3.back * 10);
     }
@@ -247,7 +296,7 @@ public class mapControl : MonoBehaviour {
             currentHex.transform.GetChild(0).GetComponent<SpriteRenderer>().color = highlightColor;
         };
     }
-
+/*
     public void HighlightRect(int xStart,int xEnd,int yStart,int yEnd,Color highlightColor)
     {
         for (int i = xStart; i < xEnd; i++)
@@ -271,7 +320,7 @@ public class mapControl : MonoBehaviour {
         }
         return hexesInRect;
     }
-
+*/
     public HashSet<GameObject> SelectInRangeUnoccupied(GameObject centralHex, int range)
     {
 
@@ -327,12 +376,29 @@ public class mapControl : MonoBehaviour {
     }
 
     public HashSet<GameObject> SelectInRange(GameObject centralHex, int range) {
-        int hexBuffer = ((centralHex.GetComponent<hexData>().myY % 2 == 0) ? 0 : 1);
+        //int hexBuffer = ((centralHex.GetComponent<hexData>().myY % 2 == 0) ? 0 : 1);
         HashSet<GameObject> hexesInRange = new HashSet<GameObject>();
         int HexX = centralHex.GetComponent<hexData>().myX; 
         int HexY = centralHex.GetComponent<hexData>().myY;
 
-        if (CheckHexExists(HexX+1,HexY)) {
+        for (int i = -range; i <= range; i++)
+        {
+            for (int j = -range; j <= range; j++)
+            {
+                if (CheckHexExists(HexX + j, HexY + i))
+                {
+                    if (Mathf.Abs(i) + Mathf.Abs(j) > range && i * j < 0)
+                    {
+                        //Accidentally did it backwards...
+                    } else
+                    {
+                        hexesInRange.Add(hexes[HexX + j, HexY + i].gameObject);
+                    }
+                }
+            }
+        }
+
+        /*if (CheckHexExists(HexX+1,HexY)) {
             hexesInRange.Add(hexes[HexX+1, HexY].gameObject);
             if (range>1)
             {
@@ -383,35 +449,41 @@ public class mapControl : MonoBehaviour {
             {
                 hexesInRange.UnionWith(SelectInRange(hexes[HexX + hexBuffer, HexY - 1].gameObject, range - 1));
             }
-        }
+        }*/
         return hexesInRange;
     }
 
     public bool CheckHexExists(int X,int Y)
     {
-        if (X >= 0&& X < mapWidth)
+        if (X >= 0 && Y >= 0 && X <= mapWidth + 1 && Y < mapHeight)
         {
-            if (Y >= 0&&Y<mapHeight)
+            if (hexes[X, Y] != null)
             {
-                if (hexes[X,Y] != null)
-                {
-                    return true;
-                }
-                else return false;
+                return true;
             }
-            else return false;
         }
-        else return false;
+        return false;
     }
 
     public void ClearHighlights()
     {
-        for (int i = 0; i < mapHeight; i++)
+        /*for (int i = 0; i < mapHeight; i++)
         {
-            for (int j = 0; j < mapWidth; j++)
+            for (int j = 0; j < mapWidth + 1; j++)
             {
-                hexes[j, i].transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
+                if (hexes[j , i] != null)
+                {
+
+                    hexes[j, i].transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
+
+                }
             }
+        }
+        hexes[7, 3].transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
+        */
+        foreach (GameObject hex in validHexes)
+        {
+            hex.transform.GetChild(0).GetComponent<SpriteRenderer>().color = Color.white;
         }
     }
 
