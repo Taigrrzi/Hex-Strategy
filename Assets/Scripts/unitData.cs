@@ -73,7 +73,6 @@ public class unitData : MonoBehaviour {
 
     public virtual void OnActiveUse()
     {
-        OnUncloaking();
     }
 
     public virtual void OnAttacking()
@@ -92,7 +91,14 @@ public class unitData : MonoBehaviour {
             mode = 1;
             if (mapControl.globalMap.gamePhase == 0) 
             {
-                    validHexes = teamStartHexes;
+                validHexes = new HashSet<GameObject>();
+                foreach (GameObject currentHex in teamStartHexes)
+                {
+                    if (!currentHex.GetComponent<hexData>().occupied)
+                    {
+                        validHexes.Add(currentHex);
+                    }
+                }
             } else if (mapControl.globalMap.teamTurn == team)
             {
                 validHexes = mapControl.globalMap.SelectInRangeUnoccupied(occupyingHex.gameObject, baseMoveSpeed + buffMoveSpeed);
@@ -131,6 +137,7 @@ public class unitData : MonoBehaviour {
         else
         {
             mode = 3;
+            mapControl.globalMap.ClearHighlights();
         }
     }
 
@@ -172,6 +179,11 @@ public class unitData : MonoBehaviour {
     public virtual void OnTurnStart()
     {
         UpdateSprite();
+    }
+
+    public virtual void OnMoveEnd()
+    {
+
     }
 
     public virtual void OnShieldGained()
@@ -245,6 +257,7 @@ public class unitData : MonoBehaviour {
         {
             shieldObj.transform.localPosition = Vector3.zero;
         }
+        OnMoveEnd();
     }
 
     public virtual void OnGlobalMove(GameObject movedUnit)
