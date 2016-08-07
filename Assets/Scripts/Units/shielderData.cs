@@ -29,8 +29,7 @@ public class shielderData : unitData
             {
                 OnActiveUse();
                 unitData unit = hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>();
-                unit.currentHealth += armorAmount;
-                unit.maxHealth += armorAmount;
+                unit.OnShieldGained();
                 LoseFocus();
                 mapControl.globalMap.currentActionPoints--;
             }

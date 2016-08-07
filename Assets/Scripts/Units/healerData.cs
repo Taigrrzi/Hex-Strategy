@@ -55,6 +55,7 @@ public class healerData : unitData
 
     public override void OnTurnEnd()
     {
+        base.OnTurnEnd();
         foreach (GameObject allyHex in GetAllyHexesInRange(1))
         {
             unitData unit = allyHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>();
