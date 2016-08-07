@@ -63,7 +63,7 @@ public class mapControl : MonoBehaviour {
             newUnit.GetComponent<unitData>().team = 0;
             newUnit.GetComponent<unitData>().teamStartHexes = Team0StartHexes;
             CreateOnHex(newUnit, RandomHexInBounds(Team0StartHexes));
-            newUnit.GetComponent<unitData>().UpdateSprite();
+            newUnit.GetComponent<unitData>().OnGameStart();
         }
 
         for (int i = 0; i < Team1StartUnitAmount; i++)
@@ -76,14 +76,14 @@ public class mapControl : MonoBehaviour {
             newUnit.GetComponent<unitData>().teamStartHexes = Team1StartHexes;
             CreateOnHex(newUnit, RandomHexInBounds(Team1StartHexes));
             newUnit.GetComponent<SpriteRenderer>().color = Color.red;
-            newUnit.GetComponent<unitData>().UpdateSprite();
+            newUnit.GetComponent<unitData>().OnGameStart();
         }
 
     }
 
     public void AddRandomUnitType(GameObject unitToGiveType)
     {
-        switch (Mathf.FloorToInt(Random.Range(0,12)))
+        switch (Mathf.FloorToInt(Random.Range(0,14)))
         {
             case 0:
                 unitToGiveType.AddComponent<soldierData>();
@@ -120,6 +120,12 @@ public class mapControl : MonoBehaviour {
                 break;
             case 11:
                 unitToGiveType.AddComponent<shielderData>();
+                break;
+            case 12:
+                unitToGiveType.AddComponent<leaderData>();
+                break;
+            case 13:
+                unitToGiveType.AddComponent<cushionerData>();
                 break;
             default:
                 Debug.Log("Random is screwy");

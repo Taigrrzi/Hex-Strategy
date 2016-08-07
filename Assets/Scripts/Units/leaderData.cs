@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class cushionerData : unitData
+public class leaderData : unitData
 {
 
     public HashSet<GameObject> ajacentAllies;
@@ -13,8 +13,8 @@ public class cushionerData : unitData
         currentHealth = 8;
         baseAttack = 1;
         baseMoveSpeed = 1;
-        unitName = "Cushioner";
-        unitDesc = "Increases Nearby Ally's Armor";
+        unitName = "Leader";
+        unitDesc = "Increases Nearby Ally's Attack";
     }
 
     public override void OnGameStart()
@@ -22,7 +22,7 @@ public class cushionerData : unitData
         base.OnGameStart();
         foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1))
         {
-            adjacentHex.GetComponent<hexData>().buffArmor++;
+            adjacentHex.GetComponent<hexData>().buffAttack++;
         }
     }
 
@@ -30,7 +30,7 @@ public class cushionerData : unitData
     {
         foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1))
         {
-            adjacentHex.GetComponent<hexData>().buffArmor--;
+            adjacentHex.GetComponent<hexData>().buffAttack--;
         }
     }
 
@@ -38,15 +38,15 @@ public class cushionerData : unitData
     {
         foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1))
         {
-            adjacentHex.GetComponent<hexData>().buffArmor++;
+            adjacentHex.GetComponent<hexData>().buffAttack++;
         }
     }
 
     public override void OnDeath()
     {
-        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1))
+        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex,1))
         {
-            adjacentHex.GetComponent<hexData>().buffArmor--;
+            adjacentHex.GetComponent<hexData>().buffAttack--;
         }
         mapControl.globalMap.moveListeners.Remove(gameObject);
         base.OnDeath();

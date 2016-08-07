@@ -80,7 +80,7 @@ public class statPaneControl : MonoBehaviour {
             currentHealth = unit.currentHealth;
             maxHealth = unit.maxHealth;
             moveSpeed = unit.buffMoveSpeed + unit.baseMoveSpeed;
-            attack = unit.baseAttack+unit.buffAttack;
+            attack = unit.baseAttack+unit.occupyingHex.GetComponent<hexData>().buffAttack;
             activeText.text = unit.activeName;
         }
     }

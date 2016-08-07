@@ -4,6 +4,8 @@ using System.Collections;
 public class hexData : MonoBehaviour{
     public int myX;
     public int myY;
+    public int buffAttack = 0;
+    public int buffArmor = 0;       
     public bool occupied;
     public GameObject occupyingObject;
 

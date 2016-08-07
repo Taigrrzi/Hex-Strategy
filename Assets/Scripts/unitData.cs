@@ -11,6 +11,8 @@ public class unitData : MonoBehaviour {
     public int baseMoveSpeed;
     public int currentAttack;
     public int buffAttack=0;
+    public int baseArmor;
+    public int buffArmor = 0;
     public GameObject shieldObj;
     public Sprite uncloakedSprite;
     public int buffMoveSpeed=0;
@@ -77,7 +79,7 @@ public class unitData : MonoBehaviour {
 
     public virtual void OnAttacking()
     {
-        currentAttack = baseAttack+buffAttack;
+        currentAttack = baseAttack+buffAttack+occupyingHex.GetComponent<hexData>().buffAttack;
         OnUncloaking();
     }
 
@@ -115,7 +117,7 @@ public class unitData : MonoBehaviour {
         }
         else
         {
-            if (baseAttack > 0)
+            if (baseAttack+buffAttack+occupyingHex.GetComponent<hexData>().buffAttack > 0)
             {
                 mode = 2;
                 validHexes = GetEnemyHexesInRange(1);
@@ -181,6 +183,11 @@ public class unitData : MonoBehaviour {
         UpdateSprite();
     }
 
+    public virtual void OnMoveStart()
+    {
+
+    }
+
     public virtual void OnMoveEnd()
     {
 
@@ -224,7 +231,7 @@ public class unitData : MonoBehaviour {
         OnUncloaking();
         if (!shielded)
         {
-            currentHealth -= damage;
+            currentHealth -= (int)Mathf.Clamp(((damage-baseArmor)-buffArmor-occupyingHex.GetComponent<hexData>().buffArmor),0,Mathf.Infinity);
         } else
         {
             OnShieldLost();
@@ -246,8 +253,14 @@ public class unitData : MonoBehaviour {
         Destroy(gameObject);
     }
 
+    public virtual void OnGameStart()
+    {
+        UpdateSprite();
+    }
+
     public void MoveToHex(GameObject hex)
     {
+        OnMoveStart();
         occupyingHex.GetComponent<hexData>().Empty();
         occupyingHex = hex;
         hex.GetComponent<hexData>().Fill(gameObject);
