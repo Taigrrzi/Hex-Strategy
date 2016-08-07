@@ -25,6 +25,7 @@ public class sniperData : unitData {
         {
             if (validHexes.Contains(hexTouched) && mapControl.globalMap.currentActionPoints > 0)
             {
+                OnUncloaking();
                 OnActiveUse();
                 hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage);
                 LoseFocus();
@@ -35,10 +36,10 @@ public class sniperData : unitData {
 
     public override void OnActivePressed()
     {
+        mapControl.globalMap.ClearHighlights();
         if (mode == 3)
         {
             mode = 0;
-            mapControl.globalMap.ClearHighlights();
         }
         else
         {

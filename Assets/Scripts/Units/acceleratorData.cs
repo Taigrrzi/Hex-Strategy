@@ -36,10 +36,10 @@ public class acceleratorData : unitData
 
     public override void OnActivePressed()
     {
+        mapControl.globalMap.ClearHighlights();
         if (mode == 3)
         {
             mode = 0;
-            mapControl.globalMap.ClearHighlights();
         }
         else
         {

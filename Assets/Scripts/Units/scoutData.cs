@@ -27,6 +27,7 @@ public class scoutData : unitData
         {
             if (validHexes.Contains(hexTouched) && mapControl.globalMap.currentActionPoints > 0)
             {
+                OnUncloaking();
                 OnActiveUse();
                 hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage);
                 LoseFocus();
@@ -35,12 +36,29 @@ public class scoutData : unitData
         }
     }
 
+
+    public override void OnMoveEnd()
+    {
+        foreach (GameObject ajHex in mapControl.globalMap.SelectInRangeOccupied(occupyingHex,1))
+        {
+            if (ajHex.GetComponent<hexData>().occupied)
+            {
+                if (ajHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().team!=team)
+                {
+                    if (ajHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().cloaked) {
+                        ajHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnUncloaking();
+                    }
+                }
+            }
+        }
+    }
+
     public override void OnActivePressed()
     {
+        mapControl.globalMap.ClearHighlights();
         if (mode == 3)
         {
             mode = 0;
-            mapControl.globalMap.ClearHighlights();
         }
         else
         {
