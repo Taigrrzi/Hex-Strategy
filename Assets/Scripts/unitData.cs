@@ -11,6 +11,8 @@ public class unitData : MonoBehaviour {
     public int baseMoveSpeed;
     public int currentAttack;
     public int buffAttack=0;
+    public GameObject shieldObj;
+    public Sprite uncloakedSprite;
     public int buffMoveSpeed=0;
     public HashSet<GameObject> validHexes;
     public int team;
@@ -19,7 +21,13 @@ public class unitData : MonoBehaviour {
     public string unitDesc = "Blank Description";
     public string activeName = "No Active";
     public bool shielded=false;
-    public bool cloaked;
+    public bool cloaked=true;
+    public HashSet<GameObject> teamStartHexes;
+
+    public void Awake()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("best_unit");
+    }
 
     public virtual void OnHexTouchedSelected(GameObject hexTouched)
     {
@@ -65,12 +73,13 @@ public class unitData : MonoBehaviour {
 
     public virtual void OnActiveUse()
     {
-
+        OnUncloaking();
     }
 
     public virtual void OnAttacking()
     {
         currentAttack = baseAttack+buffAttack;
+        OnUncloaking();
     }
 
     public virtual void OnMovePressed() {
@@ -81,20 +90,14 @@ public class unitData : MonoBehaviour {
         } else
         {
             mode = 1;
-            if (mapControl.globalMap.teamTurn == team)
+            if (mapControl.globalMap.gamePhase == 0) 
             {
-                    validHexes = mapControl.globalMap.SelectInRangeUnoccupied(occupyingHex.gameObject, baseMoveSpeed+buffMoveSpeed);
-            } else if (mapControl.globalMap.teamTurn == -1) 
+                    validHexes = teamStartHexes;
+            } else if (mapControl.globalMap.teamTurn == team)
             {
-                if (team == 0)
-                {
-                    validHexes = mapControl.globalMap.Team0StartSquares;
-                } else
-                {
-                    validHexes = mapControl.globalMap.Team1StartSquares;
-                }
+                validHexes = mapControl.globalMap.SelectInRangeUnoccupied(occupyingHex.gameObject, baseMoveSpeed + buffMoveSpeed);
             }
-            mapControl.globalMap.HighlightHash(validHexes, Color.green);
+                mapControl.globalMap.HighlightHash(validHexes, Color.green);
         }
     }
 
@@ -162,16 +165,57 @@ public class unitData : MonoBehaviour {
         return tempHexes;
     }
 
-    public virtual void OnTurnEnd() {}
+    public virtual void OnTurnEnd()
+    {
+    }
+
+    public virtual void OnTurnStart()
+    {
+        UpdateSprite();
+    }
+
+    public virtual void OnShieldGained()
+    {
+        shielded = true;
+        shieldObj = (GameObject)Instantiate(Resources.Load<GameObject>("shieldPrefab"), transform);
+        shieldObj.transform.localPosition = Vector3.zero;
+    }
+
+    public virtual void OnShieldLost()
+    {
+        shielded = false;
+        Destroy(shieldObj);
+    }
+
+    public virtual void UpdateSprite()
+    {
+        if (mapControl.globalMap.teamTurn != team)
+        {
+            if (cloaked)
+            {
+                GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit_cloak");
+            }
+        }
+        else {
+            GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit");
+        }
+    }
+
+    public void OnUncloaking()
+    {
+        cloaked = false;
+        GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit");
+    }
 
     public virtual void OnTakingDamage(int damage)
     {
+        OnUncloaking();
         if (!shielded)
         {
             currentHealth -= damage;
         } else
         {
-            shielded = false;
+            OnShieldLost();
         }
         if (currentHealth<=0)
         {
@@ -197,6 +241,10 @@ public class unitData : MonoBehaviour {
         hex.GetComponent<hexData>().Fill(gameObject);
         transform.position = hex.transform.position;
         mapControl.globalMap.UnitMoved(gameObject);
+        if (shielded)
+        {
+            shieldObj.transform.localPosition = Vector3.zero;
+        }
     }
 
     public virtual void OnGlobalMove(GameObject movedUnit)

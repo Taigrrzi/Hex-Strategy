@@ -21,8 +21,8 @@ public class mapControl : MonoBehaviour {
     public List<GameObject> Team0Units;
     public List<GameObject> Team1Units;
     public int gamePhase;
-    public HashSet<GameObject> Team0StartSquares;
-    public HashSet<GameObject> Team1StartSquares;
+    public HashSet<GameObject> Team0StartHexes;
+    public HashSet<GameObject> Team1StartHexes;
     public static mapControl globalMap;
     public int teamTurn;
     public int turnAmount;
@@ -44,9 +44,15 @@ public class mapControl : MonoBehaviour {
         hexOutline = Instantiate((GameObject)Resources.Load("HexOutline"));
         hexOutline.transform.parent = transform;
         PopulateStartZones();
-        turnAmount = 0;
-        teamTurn = -1 ;
-
+        turnAmount = -2;
+        teamTurn = Mathf.FloorToInt(Random.Range(0,2)) ;
+        if (teamTurn==0)
+        {
+            turnDisplay.color = Color.green;
+        } else
+        {
+            turnDisplay.color = Color.red;
+        }
         gamePhase = 0; //0=Unit Placement, 1=Actual Game, 2=End??
         for (int i = 0; i < Team0StartUnitAmount; i++)
         {
@@ -55,7 +61,9 @@ public class mapControl : MonoBehaviour {
             AddRandomUnitType(newUnit);
             newUnit.name = "Unit: " + i;
             newUnit.GetComponent<unitData>().team = 0;
-            CreateOnHex(newUnit, RandomHexInBounds(Team0StartSquares));
+            newUnit.GetComponent<unitData>().teamStartHexes = Team0StartHexes;
+            CreateOnHex(newUnit, RandomHexInBounds(Team0StartHexes));
+            newUnit.GetComponent<unitData>().UpdateSprite();
         }
 
         for (int i = 0; i < Team1StartUnitAmount; i++)
@@ -65,14 +73,17 @@ public class mapControl : MonoBehaviour {
             AddRandomUnitType(newUnit);
             newUnit.name = "Enemy: " + i;
             newUnit.GetComponent<unitData>().team = 1;
-            CreateOnHex(newUnit, RandomHexInBounds(Team1StartSquares));
+            newUnit.GetComponent<unitData>().teamStartHexes = Team1StartHexes;
+            CreateOnHex(newUnit, RandomHexInBounds(Team1StartHexes));
             newUnit.GetComponent<SpriteRenderer>().color = Color.red;
+            newUnit.GetComponent<unitData>().UpdateSprite();
         }
+
     }
 
     public void AddRandomUnitType(GameObject unitToGiveType)
     {
-        switch (Mathf.FloorToInt(Random.Range(0,11)))
+        switch (Mathf.FloorToInt(Random.Range(0,12)))
         {
             case 0:
                 unitToGiveType.AddComponent<soldierData>();
@@ -107,6 +118,9 @@ public class mapControl : MonoBehaviour {
             case 10:
                 unitToGiveType.AddComponent<grenadierData>();
                 break;
+            case 11:
+                unitToGiveType.AddComponent<shielderData>();
+                break;
             default:
                 Debug.Log("Random is screwy");
                 break;
@@ -129,26 +143,26 @@ public class mapControl : MonoBehaviour {
 
     void PopulateStartZones()
     {
-        Team0StartSquares = new HashSet<GameObject>();
-        Team1StartSquares = new HashSet<GameObject>();
+        Team0StartHexes = new HashSet<GameObject>();
+        Team1StartHexes = new HashSet<GameObject>();
 
-        Team0StartSquares.Add(hexes[0, 0].gameObject); //RectToHash(0,2,0,4);
-        Team0StartSquares.Add(hexes[1, 0].gameObject); 
-        Team0StartSquares.Add(hexes[1, 1].gameObject); 
-        Team0StartSquares.Add(hexes[1, 2].gameObject); 
-        Team0StartSquares.Add(hexes[2, 1].gameObject); 
-        Team0StartSquares.Add(hexes[2, 2].gameObject);
-        Team0StartSquares.Add(hexes[2, 3].gameObject); 
-        Team0StartSquares.Add(hexes[3, 3].gameObject);
+        Team0StartHexes.Add(hexes[0, 0].gameObject); //RectToHash(0,2,0,4);
+        Team0StartHexes.Add(hexes[1, 0].gameObject); 
+        Team0StartHexes.Add(hexes[1, 1].gameObject); 
+        Team0StartHexes.Add(hexes[1, 2].gameObject); 
+        Team0StartHexes.Add(hexes[2, 1].gameObject); 
+        Team0StartHexes.Add(hexes[2, 2].gameObject);
+        Team0StartHexes.Add(hexes[2, 3].gameObject); 
+        Team0StartHexes.Add(hexes[3, 3].gameObject);
 
-        Team1StartSquares.Add(hexes[7, 3].gameObject); //RectToHash(4, 6, 0, 4);
-        Team1StartSquares.Add(hexes[6, 3].gameObject);
-        Team1StartSquares.Add(hexes[6, 2].gameObject);
-        Team1StartSquares.Add(hexes[6, 1].gameObject);
-        Team1StartSquares.Add(hexes[5, 2].gameObject);
-        Team1StartSquares.Add(hexes[5, 1].gameObject);
-        Team1StartSquares.Add(hexes[5, 0].gameObject);
-        Team1StartSquares.Add(hexes[4, 0].gameObject);
+        Team1StartHexes.Add(hexes[7, 3].gameObject); //RectToHash(4, 6, 0, 4);
+        Team1StartHexes.Add(hexes[6, 3].gameObject);
+        Team1StartHexes.Add(hexes[6, 2].gameObject);
+        Team1StartHexes.Add(hexes[6, 1].gameObject);
+        Team1StartHexes.Add(hexes[5, 2].gameObject);
+        Team1StartHexes.Add(hexes[5, 1].gameObject);
+        Team1StartHexes.Add(hexes[5, 0].gameObject);
+        Team1StartHexes.Add(hexes[4, 0].gameObject);
 
     }
 
@@ -178,16 +192,10 @@ public class mapControl : MonoBehaviour {
 
     void Update()
     {
-        if (teamTurn == 0) {
-            turnDisplay.color = Color.green;
-        } else if(teamTurn==1)
-        {
-            turnDisplay.color = Color.red;
-        } else
+        if (gamePhase == 0)
         {
             currentActionPoints = startActionPoints;
-            turnDisplay.color = Color.yellow;
-        }
+        } 
         actionPointDisplay.text = ""+currentActionPoints;
         hexOutline.SetActive((selectedUnit!=null) ? true : false);
 
@@ -272,7 +280,7 @@ public class mapControl : MonoBehaviour {
         Camera.main.transform.Translate(Vector3.back * 10);
     }
 
-    public void HighLightInRange(GameObject centralHex, int range, Color highlightColor,bool unoccupied)
+    /*public void HighLightInRange(GameObject centralHex, int range, Color highlightColor,bool unoccupied)
     {
         HashSet<GameObject> hexesInRange = new HashSet<GameObject>();
         if (unoccupied == true)
@@ -287,7 +295,7 @@ public class mapControl : MonoBehaviour {
         {
             currentHex.transform.GetChild(0).GetComponent<SpriteRenderer>().color = highlightColor;
         };
-    }
+    }*/
 
     public void HighlightHash(HashSet<GameObject> hexesToHighlight, Color highlightColor)
     {
@@ -351,27 +359,50 @@ public class mapControl : MonoBehaviour {
 
     public void EndTurnButtonPressed()
     {
+        turnAmount++;
+        ClearHighlights();
         if (gamePhase == 0) {
-            gamePhase = 1;
-            teamTurn = 1;
+            teamTurn = 1 - teamTurn;
+            foreach (GameObject currentUnit in Team0Units)
+            {
+                currentUnit.GetComponent<unitData>().UpdateSprite();
+            }
+            foreach (GameObject currentUnit in Team1Units)
+            {
+                currentUnit.GetComponent<unitData>().UpdateSprite();
+            }
+            if (turnAmount==0) {
+                gamePhase = 1;
+            }
         } else
         {
-            if (teamTurn==0)
-            {
                 foreach (GameObject currentUnit in Team0Units)
                 {
                     currentUnit.GetComponent<unitData>().OnTurnEnd();
                 }
-            } else
-            {
                 foreach (GameObject currentUnit in Team1Units)
                 {
                     currentUnit.GetComponent<unitData>().OnTurnEnd();
-                }
-            }
-            teamTurn = 1 - teamTurn;
+                }       
             currentActionPoints = startActionPoints;
             selectedUnit = null;
+            teamTurn = 1 - teamTurn;
+            foreach (GameObject currentUnit in Team0Units)
+            {
+                currentUnit.GetComponent<unitData>().OnTurnStart();
+            }
+            foreach (GameObject currentUnit in Team1Units)
+            {
+                currentUnit.GetComponent<unitData>().OnTurnStart();
+            }
+        }
+        if (teamTurn == 0)
+        {
+            turnDisplay.color = Color.green;
+        }
+        else
+        {
+            turnDisplay.color = Color.red;
         }
     }
 
