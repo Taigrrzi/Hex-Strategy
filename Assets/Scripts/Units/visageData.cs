@@ -14,24 +14,26 @@ public class visageData : unitData
         baseMoveSpeed = 2;
         explosionDamage = 8;
         unitName = "Visage";
-        unitDesc = "Has Hidden Strength";
+        unitDesc = "Has 2 shadows";
     }
 
     public override void OnDeath()
     {
-        HashSet<GameObject> ajacentUnits = GetEnemyHexesInRange(1);
-        foreach (GameObject ajacentUnit in ajacentUnits)
-        {
-            ajacentUnit.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(explosionDamage);
-        }
         occupyingHex.GetComponent<hexData>().Empty();
-        if (team == 0)
+        GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
+        newUnit.AddComponent<spiritData>();
+        newUnit.GetComponent<unitData>().team = team;
+        mapControl.globalMap.CreateOnHex(newUnit, occupyingHex);
+        if (team==0)
         {
-            mapControl.globalMap.Team0Units.Remove(gameObject);
-        }
-        else
+            mapControl.globalMap.Team0Units.Add(newUnit);
+            newUnit.name = "Unit: Spirit";
+            newUnit.GetComponent<SpriteRenderer>().color = Color.green;
+        } else
         {
-            mapControl.globalMap.Team1Units.Remove(gameObject);
+            mapControl.globalMap.Team1Units.Add(newUnit);
+            newUnit.name = "Enemy: Spirit";
+            newUnit.GetComponent<SpriteRenderer>().color = Color.red;
         }
         Destroy(gameObject);
     }

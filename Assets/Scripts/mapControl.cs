@@ -83,7 +83,7 @@ public class mapControl : MonoBehaviour {
 
     public void AddRandomUnitType(GameObject unitToGiveType)
     {
-        switch (Mathf.FloorToInt(Random.Range(0,14)))
+        switch (Mathf.FloorToInt(Random.Range(0,15)))
         {
             case 0:
                 unitToGiveType.AddComponent<soldierData>();
@@ -126,6 +126,9 @@ public class mapControl : MonoBehaviour {
                 break;
             case 13:
                 unitToGiveType.AddComponent<cushionerData>();
+                break;
+            case 14:
+                unitToGiveType.AddComponent<visageData>();
                 break;
             default:
                 Debug.Log("Random is screwy");
@@ -172,7 +175,7 @@ public class mapControl : MonoBehaviour {
 
     }
 
-    void CreateOnHex(GameObject unit, GameObject hex)
+    public void CreateOnHex(GameObject unit, GameObject hex)
     {
         
         unit.GetComponent<unitData>().occupyingHex = hex;

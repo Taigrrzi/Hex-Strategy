@@ -29,6 +29,7 @@ public class missileData : unitData
 
     public override void OnDeath()
     {
+        occupyingHex.GetComponent<hexData>().Empty();
         HashSet<GameObject> ajacentUnits = GetEnemyHexesInRange(1);
             foreach (GameObject ajacentUnit in ajacentUnits)
             {
