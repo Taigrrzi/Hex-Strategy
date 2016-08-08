@@ -17,15 +17,6 @@ public class visageData : unitData
         unitDesc = "Has Hidden Strength";
     }
 
-    public override void OnActivePressed()
-    {
-        if (mapControl.globalMap.currentActionPoints > 0)
-        {
-            OnDeath();
-            mapControl.globalMap.currentActionPoints--;
-        }
-    }
-
     public override void OnDeath()
     {
         HashSet<GameObject> ajacentUnits = GetEnemyHexesInRange(1);
