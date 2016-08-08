@@ -103,7 +103,13 @@ public class unitData : MonoBehaviour {
                 }
             } else if (mapControl.globalMap.teamTurn == team)
             {
-                validHexes = mapControl.globalMap.SelectInRangeUnoccupied(occupyingHex.gameObject, baseMoveSpeed + buffMoveSpeed);
+                if (baseMoveSpeed + buffMoveSpeed > 0)
+                {
+                    validHexes = mapControl.globalMap.SelectInRangeUnoccupied(occupyingHex.gameObject, baseMoveSpeed + buffMoveSpeed);
+                } else
+                {
+                    mode = 0;
+                }
             }
                 mapControl.globalMap.HighlightHash(validHexes, Color.green);
         }

@@ -5,14 +5,12 @@ using System.Collections.Generic;
 public class visageData : unitData
 {
 
-    int explosionDamage;
     void Start()
     {
         maxHealth = 4;
         currentHealth = 4;
         baseAttack = 0;
-        baseMoveSpeed = 2;
-        explosionDamage = 8;
+        baseMoveSpeed = 1;
         unitName = "Visage";
         unitDesc = "Has 2 shadows";
     }
