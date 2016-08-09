@@ -33,7 +33,7 @@ public class missileData : unitData
         StartExplosion();
             foreach (GameObject ajacentUnit in ajacentUnits)
             {
-                ajacentUnit.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(explosionDamage,false);
+                ajacentUnit.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(explosionDamage,false,gameObject);
             }
         EndExplosion();
         occupyingHex.GetComponent<hexData>().Empty();

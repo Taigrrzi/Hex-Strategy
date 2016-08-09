@@ -29,7 +29,7 @@ public class scoutData : unitData
             {
                 OnUncloaking();
                 OnActiveUse();
-                hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage,true);
+                hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage,true,gameObject);
                 LoseFocus();
                 mapControl.globalMap.currentActionPoints--;
             }

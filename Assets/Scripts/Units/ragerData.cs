@@ -9,13 +9,13 @@ public class ragerData : unitData
         currentHealth = 12;
         baseAttack = 0;
         baseMoveSpeed = 1;
-        unitName = "Soldier";
+        unitName = "Beserker";
         unitDesc = "Don't make him angry";
     }
 
-    public override void OnTakingDamage(int damage, bool uncloak)
+    public override void OnTakingDamage(int damage, bool uncloak,GameObject dealer)
     {
         baseAttack++;
-        base.OnTakingDamage(damage, uncloak);
+        base.OnTakingDamage(damage, uncloak,dealer);
     }
 }

@@ -14,11 +14,11 @@ public class conduitData : unitData
         unitDesc = "Transfers damage to healthiest ally";
     }
 
-    public override void OnTakingDamage(int damage, bool uncloak)
+    public override void OnTakingDamage(int damage, bool uncloak,GameObject dealer)
     {
         if (mapControl.globalMap.explosionInProgress)
         {
-            mapControl.globalMap.damageQueue.Add(new damage(gameObject, damage, uncloak));
+            mapControl.globalMap.damageQueue.Add(new damage(gameObject, damage, uncloak,dealer));
         }
         else
         {
@@ -55,11 +55,11 @@ public class conduitData : unitData
             GameObject randomHealthiest = healthyAllies[Mathf.FloorToInt(Random.Range(0, healthyAllies.Count))];
             if (gameObject == randomHealthiest)
             {
-                base.OnTakingDamage(damage, true);
+                base.OnTakingDamage(damage, true,dealer);
             }
             else
             {
-                randomHealthiest.GetComponent<unitData>().OnTakingDamage(damage, false);
+                randomHealthiest.GetComponent<unitData>().OnTakingDamage(damage, false,dealer);
             }
         }
     }

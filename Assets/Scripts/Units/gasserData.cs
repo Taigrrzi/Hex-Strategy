@@ -24,7 +24,7 @@ public class gasserData : unitData
         foreach (GameObject enemyhex in GetEnemyHexesInRange(1))
         {
             unitData unit = enemyhex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>();
-            unit.OnTakingDamage(gasDamage,false);
+            unit.OnTakingDamage(gasDamage,false,gameObject);
         }
     }
 

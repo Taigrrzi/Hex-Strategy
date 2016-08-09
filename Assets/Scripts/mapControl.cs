@@ -86,7 +86,7 @@ public class mapControl : MonoBehaviour {
 
     public void AddRandomUnitType(GameObject unitToGiveType)
     {
-        switch (Mathf.FloorToInt(Random.Range(0,25)))
+        switch (Mathf.FloorToInt(Random.Range(0,31)))
         {
             case 0:
                 unitToGiveType.AddComponent<soldierData>();
@@ -162,6 +162,27 @@ public class mapControl : MonoBehaviour {
                 break;
             case 24:
                 unitToGiveType.AddComponent<paladinData>();
+                break;
+            case 25:
+                unitToGiveType.AddComponent<sprinterData>();
+                break;
+            case 26:
+                unitToGiveType.AddComponent<turretData>();
+                break;
+            case 27:
+                unitToGiveType.AddComponent<demonData>();
+                break;
+            case 28:
+                unitToGiveType.AddComponent<murdererData>();
+                break;
+            case 29:
+                unitToGiveType.AddComponent<pathFinderData>();
+                break;
+            case 30:
+                unitToGiveType.AddComponent<warperData>();
+                break;
+            case 31:
+                unitToGiveType.AddComponent<debufferData>();
                 break;
             default:
                 Debug.Log("Random is screwy");
@@ -542,7 +563,7 @@ public class mapControl : MonoBehaviour {
     {
         foreach (damage queuedDamage in damageQueue)
         {
-            queuedDamage.damagedObject.GetComponent<unitData>().OnTakingDamage(queuedDamage.damageAmount,queuedDamage.uncloak);
+            queuedDamage.damagedObject.GetComponent<unitData>().OnTakingDamage(queuedDamage.damageAmount,queuedDamage.uncloak,queuedDamage.dealer);
         }
         explosionInProgress = false;
         damageQueue = new List<damage>();

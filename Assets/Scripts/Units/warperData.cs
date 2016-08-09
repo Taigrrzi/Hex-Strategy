@@ -2,22 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class armorerData : unitData
+public class warperData : unitData
 {
-
-    public int range;
-    public int armorAmount;
     void Start()
     {
-        range = 1;
-        maxHealth = 8;
-        currentHealth = 8;
-        baseAttack = 2;
+        maxHealth = 20;
+        currentHealth = 20;
+        baseAttack = 1;
         baseMoveSpeed = 1;
-        armorAmount = 3;
-        unitName = "Armorer";
-        unitDesc = "Decent stats, and can give stuff health";
-        activeName = "Give Armor";
+        unitName = "Warper";
+        unitDesc = "Mastery of time and space";
+        activeName = "Teleport To Ally";
     }
 
     public override void OnHexTouchedSelected(GameObject hexTouched)
@@ -28,10 +23,7 @@ public class armorerData : unitData
             if (validHexes.Contains(hexTouched) && mapControl.globalMap.currentActionPoints > 0)
             {
                 OnActiveUse();
-                unitData unit = hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>();
-                unit.currentHealth += armorAmount;
-                unit.maxHealth += armorAmount;
-                unit.buffHealth += armorAmount;
+                MoveToHex(hexTouched);
                 LoseFocus();
                 mapControl.globalMap.currentActionPoints--;
             }
@@ -48,7 +40,22 @@ public class armorerData : unitData
         else
         {
             mode = 3;
-            validHexes = GetAllyHexesInRange(range);
+            validHexes = new HashSet<GameObject>();
+            List<GameObject> teamHexes = new List<GameObject>();
+            if (team==0)
+            {
+                teamHexes = mapControl.globalMap.Team0Units;
+            } else
+            {
+                teamHexes = mapControl.globalMap.Team1Units;
+            }
+            foreach(GameObject ally in teamHexes)
+            {
+                if (ally != gameObject)
+                {
+                    validHexes.UnionWith(mapControl.globalMap.SelectInRangeUnoccupied(ally.GetComponent<unitData>().occupyingHex, 1, true));
+                }
+            }
             mapControl.globalMap.HighlightHash(validHexes, Color.green);
             if (validHexes.Count == 0)
             {
@@ -56,5 +63,5 @@ public class armorerData : unitData
             }
         }
     }
-}
 
+}
