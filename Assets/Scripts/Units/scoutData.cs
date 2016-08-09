@@ -29,7 +29,7 @@ public class scoutData : unitData
             {
                 OnUncloaking();
                 OnActiveUse();
-                hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage);
+                hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage,true);
                 LoseFocus();
                 mapControl.globalMap.currentActionPoints--;
             }
@@ -39,7 +39,7 @@ public class scoutData : unitData
 
     public override void OnMoveEnd()
     {
-        foreach (GameObject ajHex in mapControl.globalMap.SelectInRangeOccupied(occupyingHex,1))
+        foreach (GameObject ajHex in mapControl.globalMap.SelectInRangeOccupied(occupyingHex,1,true))
         {
             if (ajHex.GetComponent<hexData>().occupied)
             {

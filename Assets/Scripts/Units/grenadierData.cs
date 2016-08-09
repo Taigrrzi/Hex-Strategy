@@ -28,14 +28,13 @@ public class grenadierData : unitData
             if (validHexes.Contains(hexTouched) && mapControl.globalMap.currentActionPoints > 0)
             {
                 OnActiveUse();
-                hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage);
-                HashSet<GameObject> surroundingOccupied = mapControl.globalMap.SelectInRangeOccupied(hexTouched, 1);
-                Debug.Log(surroundingOccupied.Count);
+                hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage,true);
+                HashSet<GameObject> surroundingOccupied = mapControl.globalMap.SelectInRangeOccupied(hexTouched, 1,true);
                 foreach (GameObject surroundingThing in surroundingOccupied)
                 {
                     if (surroundingThing.tag=="Unit"&&surroundingThing.GetComponent<unitData>().team!=team)
                     {
-                        surroundingThing.GetComponent<unitData>().OnTakingDamage(rangedDamage);
+                        surroundingThing.GetComponent<unitData>().OnTakingDamage(rangedDamage,false);
                     }
                 }
                 LoseFocus();

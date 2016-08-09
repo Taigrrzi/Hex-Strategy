@@ -20,7 +20,7 @@ public class cushionerData : unitData
     public override void OnGameStart()
     {
         base.OnGameStart();
-        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1))
+        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1,true))
         {
             adjacentHex.GetComponent<hexData>().buffArmor++;
         }
@@ -28,7 +28,7 @@ public class cushionerData : unitData
 
     public override void OnMoveStart()
     {
-        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1))
+        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1,true))
         {
             adjacentHex.GetComponent<hexData>().buffArmor--;
         }
@@ -36,7 +36,7 @@ public class cushionerData : unitData
 
     public override void OnMoveEnd()
     {
-        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1))
+        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1,true))
         {
             adjacentHex.GetComponent<hexData>().buffArmor++;
         }
@@ -44,7 +44,7 @@ public class cushionerData : unitData
 
     public override void OnDeath()
     {
-        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1))
+        foreach (GameObject adjacentHex in mapControl.globalMap.SelectInRange(occupyingHex, 1, true))
         {
             adjacentHex.GetComponent<hexData>().buffArmor--;
         }

@@ -25,11 +25,11 @@ public class mortarData : unitData
             {
                 OnUncloaking();
                 OnActiveUse();
-                foreach (GameObject bombedHex in mapControl.globalMap.SelectInRangeOccupied(hexTouched,1))
+                foreach (GameObject bombedHex in mapControl.globalMap.SelectInRangeOccupied(hexTouched,1,false))
                 {
                     if (bombedHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().team!=team)
                     {
-                        bombedHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage);
+                        bombedHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage,false);
                     }
                 }
 
@@ -50,7 +50,7 @@ public class mortarData : unitData
         else
         {
             mode = 3;
-            validHexes = mapControl.globalMap.SelectInRange(occupyingHex,range);
+            validHexes = mapControl.globalMap.SelectInRange(occupyingHex,range,false);
             mapControl.globalMap.HighlightHash(validHexes, Color.red);
             if (validHexes.Count == 0)
             {
