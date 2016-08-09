@@ -5,7 +5,7 @@ public class Control : MonoBehaviour {
      public GameObject selectedUnit;
      public int gamePhase;
      public int teamTurn;
-    public int unitAmount = 35;
+    public int unitAmount = 40;
 
     public void AddUnitType(GameObject unitToGiveType, int id)
     {
@@ -115,6 +115,21 @@ public class Control : MonoBehaviour {
                 break;
             case 34:
                 unitToGiveType.AddComponent<phoenixData>();
+                break;
+            case 35:
+                unitToGiveType.AddComponent<golemData>();
+                break;
+            case 36:
+                unitToGiveType.AddComponent<manipulatorData>();
+                break;
+            case 37:
+                unitToGiveType.AddComponent<bruiserData>();
+                break;
+            case 38:
+                unitToGiveType.AddComponent<beserkerData>();
+                break;
+            case 39:
+                unitToGiveType.AddComponent<witchData>();
                 break;
             default:
                 Debug.Log("Random is screwy");
