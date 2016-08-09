@@ -40,7 +40,7 @@ public class mapControl : MonoBehaviour {
 
     // Use this for initialization
     void Awake () {
-
+        damageQueue = new List<damage>();
         globalMap = this;
         hexes = new hexData[mapWidth + 2, mapHeight];
         GenerateMap();
@@ -561,9 +561,12 @@ public class mapControl : MonoBehaviour {
 
     public void EndExplosion()
     {
-        foreach (damage queuedDamage in damageQueue)
+        if (damageQueue.Count > 0)
         {
-            queuedDamage.damagedObject.GetComponent<unitData>().OnTakingDamage(queuedDamage.damageAmount,queuedDamage.uncloak,queuedDamage.dealer);
+            foreach (damage queuedDamage in damageQueue)
+            {
+                queuedDamage.damagedObject.GetComponent<unitData>().OnTakingDamage(queuedDamage.damageAmount, queuedDamage.uncloak, queuedDamage.dealer);
+            }
         }
         explosionInProgress = false;
         damageQueue = new List<damage>();

@@ -17,7 +17,7 @@ public class paladinData : unitData
 
     public override void OnGameStart()
     {
-        base.OnGameStart();
         OnShieldGained();
+        base.OnGameStart();
     }
 }
