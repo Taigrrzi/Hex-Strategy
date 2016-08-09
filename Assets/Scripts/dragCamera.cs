@@ -10,7 +10,10 @@ public class dragCamera : MonoBehaviour
     public bool mouseMode=true;
     public float startZoomDistance;
     public float oldSize;
+    public float minimumZoom = 1;
+    public float maximumZoom = 5;
 
+    public float[] bounds; //Left, Right, Top, Bottom (-3.5, 8, 4.4, -2)
 
 
     void Update()
@@ -36,7 +39,7 @@ public class dragCamera : MonoBehaviour
             }
 
             targetSize += Input.GetAxis("Mouse ScrollWheel") * 3;
-            targetSize = Mathf.Clamp(targetSize, 1, 5);
+            targetSize = Mathf.Clamp(targetSize, minimumZoom, maximumZoom);
             Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, targetSize, 0.2f);
         } else
         {
@@ -63,7 +66,7 @@ public class dragCamera : MonoBehaviour
                             oldSize = Camera.main.orthographicSize;
                         }
                         targetSize = oldSize * (startZoomDistance / distance);
-                        targetSize = Mathf.Clamp(targetSize, 1, 5);
+                        targetSize = Mathf.Clamp(targetSize, minimumZoom, maximumZoom);
                         Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, targetSize, 0.2f);
                     }
 
@@ -77,24 +80,24 @@ public class dragCamera : MonoBehaviour
         }
 
 
-        if (transform.position.x < -3.5)
+        if (transform.position.x < bounds[0])
         {
-            transform.position = new Vector3(-3.5f, transform.position.y, transform.position.z);
+            transform.position = new Vector3(bounds[0], transform.position.y, transform.position.z);
         }
         else
-        if (transform.position.x > 8)
+        if (transform.position.x > bounds[1])
         {
-            transform.position = new Vector3(8, transform.position.y, transform.position.z);
+            transform.position = new Vector3(bounds[1], transform.position.y, transform.position.z);
         }
 
-        if (transform.position.y > 4.4)
+        if (transform.position.y > bounds[2])
         {
-            transform.position = new Vector3(transform.position.x, 4.4f, transform.position.z);
+            transform.position = new Vector3(transform.position.x, bounds[2], transform.position.z);
         }
         else
-        if (transform.position.y < -2)
+        if (transform.position.y < bounds[3])
         {
-            transform.position = new Vector3(transform.position.x, -2, transform.position.z);
+            transform.position = new Vector3(transform.position.x, bounds[3], transform.position.z);
         }
     }
 

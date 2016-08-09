@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class CollectionControl : MonoBehaviour {
+public class CollectionControl : Control {
 
     public int mapWidth;
     public int mapHeight;
     public HashSet<GameObject> validHexes;
     public GameObject hexPrefab;
+
+//    public int teamTurn = 0;
 
     float offsetX = 0.858f;
     float offsetY = 0.745f;
@@ -16,48 +18,26 @@ public class CollectionControl : MonoBehaviour {
     GameObject hoveredHex;
     public GameObject hexOutline;
 
-    public List<GameObject> Team0Units;
-    public List<GameObject> Team1Units;
+    public List<GameObject> hexTeam;
+    
+    public static CollectionControl globalCollection;
 
+    public List<int> team;
 
-    public GameObject selectedUnit;
+//    public GameObject selectedUnit;
 
     public List<GameObject> moveListeners;
 
     // Use this for initialization
     void Awake()
     {
-
+        globalCollection = this;
         hexes = new hexData[mapWidth + 2, mapHeight];
         GenerateMap();
         hexOutline = Instantiate((GameObject)Resources.Load("HexOutline"));
         hexOutline.transform.parent = transform;
-/*
-        for (int i = 0; i < Team0StartUnitAmount; i++)
-        {
-            GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
-            Team0Units.Add(newUnit);
-            AddRandomUnitType(newUnit);
-            newUnit.name = "Unit: " + i;
-            newUnit.GetComponent<unitData>().team = 0;
-            newUnit.GetComponent<unitData>().teamStartHexes = Team0StartHexes;
-            CreateOnHex(newUnit, RandomHexInBounds(Team0StartHexes));
-            newUnit.GetComponent<unitData>().OnGameStart();
-        }
-
-        for (int i = 0; i < Team1StartUnitAmount; i++)
-        {
-            GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
-            Team1Units.Add(newUnit);
-            AddRandomUnitType(newUnit);
-            newUnit.name = "Enemy: " + i;
-            newUnit.GetComponent<unitData>().team = 1;
-            newUnit.GetComponent<unitData>().teamStartHexes = Team1StartHexes;
-            CreateOnHex(newUnit, RandomHexInBounds(Team1StartHexes));
-            newUnit.GetComponent<SpriteRenderer>().color = Color.red;
-            newUnit.GetComponent<unitData>().OnGameStart();
-        }
-        */
+        gamePhase = -1;
+        PopulateCollection();
     }
 
     void Update()
@@ -131,22 +111,134 @@ public class CollectionControl : MonoBehaviour {
         Destroy(hexes[0, 3].gameObject);
         Destroy(hexes[1, 3].gameObject);
 
-        validHexes.Remove(hexes[6, 0].gameObject);
-        Destroy(hexes[6, 0].gameObject);
-        hexes[7, 3] = ((GameObject)Instantiate(hexPrefab, new Vector3((7 - 0.5f * 3) * offsetX, 3 * offsetY, 0), Quaternion.identity)).GetComponent<hexData>();
-        hexes[7, 3].gameObject.name = "Hex " + 7 + "," + 3;
-        hexes[7, 3].gameObject.transform.parent = transform;
-        hexes[7, 3].myX = 7;
-        hexes[7, 3].myY = 3;
+        validHexes.Remove(hexes[mapWidth, 0].gameObject);
+        Destroy(hexes[mapWidth, 0].gameObject);
+        hexes[mapWidth + 1, 3] = ((GameObject)Instantiate(hexPrefab, new Vector3((mapWidth + 1 - 0.5f * 3) * offsetX, 3 * offsetY, 0), Quaternion.identity)).GetComponent<hexData>();
+        hexes[mapWidth + 1, 3].gameObject.name = "Hex " + mapWidth + 1 + "," + 3;
+        hexes[mapWidth + 1, 3].gameObject.transform.parent = transform;
+        hexes[mapWidth + 1, 3].myX = 7;
+        hexes[mapWidth + 1, 3].myY = 3;
 
-        validHexes.Add(hexes[7, 3].gameObject);
+        validHexes.Add(hexes[mapWidth + 1, 3].gameObject);
 
         Camera.main.transform.position = hexes[Mathf.FloorToInt(mapWidth / 2), Mathf.FloorToInt(mapHeight / 2)].gameObject.transform.position;
         Camera.main.transform.Translate(Vector3.back * 10);
     }
 
+    void PopulateCollection()
+    {
+        for (int i = 0; i < 16; i++)
+        {
+            GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
+            AddUnitType(newUnit,i);
+            newUnit.name = "Unit: " + i;
+            CreateOnHex(newUnit, RandomHexInBounds(validHexes));
+        }
+    }
+
+    GameObject RandomHexInBounds(HashSet<GameObject> hexBound)
+    { // Some Checking to do when i can be arsed. ie stop infinite loop if bound is full
+        GameObject[] tempArray = new GameObject[hexBound.Count];
+        hexBound.CopyTo(tempArray);
+
+        int rand = Random.Range(0, hexBound.Count);
+        while (tempArray[rand].GetComponent<hexData>().occupied)
+        {
+            rand = Random.Range(0, hexBound.Count);
+        }
+        return tempArray[rand];
+
+    }
+
+    public void CreateOnHex(GameObject unit, GameObject hex)
+    {
+        unit.GetComponent<unitData>().occupyingHex = hex;
+        hex.GetComponent<hexData>().Fill(unit);
+        unit.transform.position = hex.transform.position;
+    }
+
+    public void AddUnitType(GameObject unitToGiveType, int id)
+    {
+        switch (id)
+        {
+            case 0:
+                unitToGiveType.AddComponent<soldierData>();
+                break;
+            case 1:
+                unitToGiveType.AddComponent<scoutData>();
+                break;
+            case 2:
+                unitToGiveType.AddComponent<sniperData>();
+                break;
+            case 3:
+                unitToGiveType.AddComponent<tankData>();
+                break;
+            case 4:
+                unitToGiveType.AddComponent<healerData>();
+                break;
+            case 5:
+                unitToGiveType.AddComponent<missileData>();
+                break;
+            case 6:
+                unitToGiveType.AddComponent<armorerData>();
+                break;
+            case 7:
+                unitToGiveType.AddComponent<weaponerData>();
+                break;
+            case 8:
+                unitToGiveType.AddComponent<acceleratorData>();
+                break;
+            case 9:
+                unitToGiveType.AddComponent<glasscannonData>();
+                break;
+            case 10:
+                unitToGiveType.AddComponent<grenadierData>();
+                break;
+            case 11:
+                unitToGiveType.AddComponent<shielderData>();
+                break;
+            case 12:
+                unitToGiveType.AddComponent<leaderData>();
+                break;
+            case 13:
+                unitToGiveType.AddComponent<cushionerData>();
+                break;
+            case 14:
+                unitToGiveType.AddComponent<visageData>();
+                break;
+            case 15:
+                unitToGiveType.AddComponent<mortarData>();
+                break;
+            default:
+                Debug.Log("Random is screwy");
+                break;
+        }
+
+        unitToGiveType.GetComponent<unitData>().id = id;
+    }
+
     public void Back()
     {
         GameObject.Find("SceneManager").GetComponent<SceneControl>().StartMenu();
+    }
+
+
+    public void SetTeam(int pos)
+    {
+        team[pos] = selectedUnit.GetComponent<unitData>().id;
+        hexTeam[pos].GetComponentInChildren<UnityEngine.UI.Image>().sprite = selectedUnit.GetComponent<unitData>().uncloakedSprite;
+    }
+
+    public void SaveTeam(int t)
+    {
+        GameObject scene = GameObject.Find("SceneManager");
+        if (t == 0)
+        {
+            scene.GetComponent<SceneControl>().Team0 = team;
+        } else
+        {
+            scene.GetComponent<SceneControl>().Team1 = team;
+        }
+        Debug.Log("Saved");
     }
 }

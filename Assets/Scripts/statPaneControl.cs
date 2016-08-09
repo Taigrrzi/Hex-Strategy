@@ -13,10 +13,12 @@ public class statPaneControl : MonoBehaviour {
     unitData unit;
     public Text activeText;
     public Text descPane;
-	
+
+    public Control controller;
+
 	// Update is called once per frame
 	void Update () {
-	    if (mapControl.globalMap.selectedUnit==null)
+	    if (controller.selectedUnit==null)
         {
             transform.parent.parent.GetChild(0).gameObject.SetActive(false);
             transform.parent.parent.GetChild(1).gameObject.SetActive(false);
@@ -28,11 +30,11 @@ public class statPaneControl : MonoBehaviour {
         } else
         {
 
-            unit = mapControl.globalMap.selectedUnit.GetComponent<unitData>();
+            unit = controller.selectedUnit.GetComponent<unitData>();
 
-            if (mapControl.globalMap.gamePhase == 0)
+            if (controller.gamePhase == 0)
             {   
-                if (mapControl.globalMap.teamTurn == unit.team)
+                if (controller.teamTurn == unit.team)
                 {
                     transform.parent.parent.GetChild(0).gameObject.SetActive(true);
                     transform.parent.parent.GetChild(1).gameObject.SetActive(false);
@@ -50,7 +52,7 @@ public class statPaneControl : MonoBehaviour {
             }
             else
             {
-                if (unit.team == mapControl.globalMap.teamTurn)
+                if (unit.team == controller.teamTurn)
                 {
                     GetComponent<Text>().text = "\nUnit Type:\n" + unitType + "\nHealth:\n" + currentHealth + "/" + maxHealth + "\nAttack: Speed:\n" + attack + "       " + moveSpeed;
                     descPane.text = unit.unitDesc;

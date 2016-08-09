@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class mapControl : MonoBehaviour {
+public class mapControl : Control {
 
     public int mapWidth;
     public int mapHeight;
@@ -20,18 +20,20 @@ public class mapControl : MonoBehaviour {
     public int Team1StartUnitAmount;
     public List<GameObject> Team0Units;
     public List<GameObject> Team1Units;
-    public int gamePhase;
+//    public int gamePhase;
     public HashSet<GameObject> Team0StartHexes;
     public HashSet<GameObject> Team1StartHexes;
     public static mapControl globalMap;
-    public int teamTurn;
+//    public int teamTurn;
     public int turnAmount;
     public int startActionPoints=2;
     public int currentActionPoints;
 
     public Image turnDisplay;
     public Text actionPointDisplay;
-    public GameObject selectedUnit;
+    //    public GameObject selectedUnit;
+    public GameObject sceneManager;
+
 
     public List<GameObject> moveListeners;
 
@@ -54,36 +56,67 @@ public class mapControl : MonoBehaviour {
             turnDisplay.color = Color.red;
         }
         gamePhase = 0; //0=Unit Placement, 1=Actual Game, 2=End??
-        for (int i = 0; i < Team0StartUnitAmount; i++)
-        {
-            GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
-            Team0Units.Add(newUnit);
-            AddRandomUnitType(newUnit);
-            newUnit.name = "Unit: " + i;
-            newUnit.GetComponent<unitData>().team = 0;
-            newUnit.GetComponent<unitData>().teamStartHexes = Team0StartHexes;
-            CreateOnHex(newUnit, RandomHexInBounds(Team0StartHexes));
-            newUnit.GetComponent<unitData>().OnGameStart();
-        }
 
-        for (int i = 0; i < Team1StartUnitAmount; i++)
+        sceneManager = GameObject.Find("SceneManager");
+        if (sceneManager != null)
         {
-            GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
-            Team1Units.Add(newUnit);
-            AddRandomUnitType(newUnit);
-            newUnit.name = "Enemy: " + i;
-            newUnit.GetComponent<unitData>().team = 1;
-            newUnit.GetComponent<unitData>().teamStartHexes = Team1StartHexes;
-            CreateOnHex(newUnit, RandomHexInBounds(Team1StartHexes));
-            newUnit.GetComponent<SpriteRenderer>().color = Color.red;
-            newUnit.GetComponent<unitData>().OnGameStart();
+            for (int i = 0; i < Team0StartUnitAmount; i++)
+            {
+                GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
+                Team0Units.Add(newUnit);
+                AddUnitType(newUnit, sceneManager.GetComponent<SceneControl>().Team0[i]);
+                newUnit.name = "Unit: " + i;
+                newUnit.GetComponent<unitData>().team = 0;
+                newUnit.GetComponent<unitData>().teamStartHexes = Team0StartHexes;
+                CreateOnHex(newUnit, RandomHexInBounds(Team0StartHexes));
+                newUnit.GetComponent<unitData>().OnGameStart();
+            }
+            for (int i = 0; i < Team1StartUnitAmount; i++)
+            {
+                GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
+                Team1Units.Add(newUnit);
+                AddUnitType(newUnit, sceneManager.GetComponent<SceneControl>().Team1[i]);
+                newUnit.name = "Enemy: " + i;
+                newUnit.GetComponent<unitData>().team = 1;
+                newUnit.GetComponent<unitData>().teamStartHexes = Team1StartHexes;
+                CreateOnHex(newUnit, RandomHexInBounds(Team1StartHexes));
+                newUnit.GetComponent<SpriteRenderer>().color = Color.red;
+                newUnit.GetComponent<unitData>().OnGameStart();
+            }
         }
+        else
+        {
 
+            for (int i = 0; i < Team0StartUnitAmount; i++)
+            {
+                GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
+                Team0Units.Add(newUnit);
+                AddUnitType(newUnit, Mathf.FloorToInt(Random.Range(0, 16)));
+                newUnit.name = "Unit: " + i;
+                newUnit.GetComponent<unitData>().team = 0;
+                newUnit.GetComponent<unitData>().teamStartHexes = Team0StartHexes;
+                CreateOnHex(newUnit, RandomHexInBounds(Team0StartHexes));
+                newUnit.GetComponent<unitData>().OnGameStart();
+            }
+
+            for (int i = 0; i < Team1StartUnitAmount; i++)
+            {
+                GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
+                Team1Units.Add(newUnit);
+                AddUnitType(newUnit, Mathf.FloorToInt(Random.Range(0, 16)));
+                newUnit.name = "Enemy: " + i;
+                newUnit.GetComponent<unitData>().team = 1;
+                newUnit.GetComponent<unitData>().teamStartHexes = Team1StartHexes;
+                CreateOnHex(newUnit, RandomHexInBounds(Team1StartHexes));
+                newUnit.GetComponent<SpriteRenderer>().color = Color.red;
+                newUnit.GetComponent<unitData>().OnGameStart();
+            }
+        }
     }
 
-    public void AddRandomUnitType(GameObject unitToGiveType)
+    public void AddUnitType(GameObject unitToGiveType, int id)
     {
-        switch (Mathf.FloorToInt(Random.Range(0,16)))
+        switch (id)
         {
             case 0:
                 unitToGiveType.AddComponent<soldierData>();
@@ -137,7 +170,11 @@ public class mapControl : MonoBehaviour {
                 Debug.Log("Random is screwy");
                 break;
         }
+
+        unitToGiveType.GetComponent<unitData>().id = id;
     }
+
+
 
     GameObject RandomHexInBounds(HashSet<GameObject> hexBound)
     { // Some Checking to do when i can be arsed. ie stop infinite loop if bound is full
