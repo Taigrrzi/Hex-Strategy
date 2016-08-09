@@ -116,7 +116,7 @@ public class mapControl : Control {
             }
         }
     }
-
+    /*
     public void AddUnitType(GameObject unitToGiveType, int id)
     {
         switch (id)
@@ -217,6 +217,9 @@ public class mapControl : Control {
             case 31:
                 unitToGiveType.AddComponent<debufferData>();
                 break;
+            case 32:
+                unitToGiveType.AddComponent<queenData>();
+                break;
             default:
                 Debug.Log("Random is screwy");
                 break;
@@ -224,7 +227,7 @@ public class mapControl : Control {
 
         unitToGiveType.GetComponent<unitData>().id = id;
     }
-
+    */
 
 
     GameObject RandomHexInBounds(HashSet<GameObject> hexBound)
