@@ -282,11 +282,12 @@ public class CollectionControl : Control {
         GameObject scene = GameObject.Find("SceneManager");
         if (t == 0)
         {
-            scene.GetComponent<SceneControl>().Team0 = team;
+            scene.GetComponent<SceneControl>().Team0.Clear();
+            scene.GetComponent<SceneControl>().Team0.AddRange(team);
         } else
         {
-            scene.GetComponent<SceneControl>().Team1 = team;
+            scene.GetComponent<SceneControl>().Team1.Clear();
+            scene.GetComponent<SceneControl>().Team1.AddRange(team);
         }
-        Debug.Log("Saved");
     }
 }
