@@ -27,7 +27,7 @@ public class healerData : unitData
             {
                 OnActiveUse();
                 unitData unit = hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>();
-                unit.currentHealth=unit.maxHealth;
+                unit.OnHealing(unit.maxHealth-unit.currentHealth);
                 LoseFocus();
                 mapControl.globalMap.currentActionPoints--;
             }
@@ -59,10 +59,7 @@ public class healerData : unitData
         foreach (GameObject allyHex in GetAllyHexesInRange(1))
         {
             unitData unit = allyHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>();
-            if (unit.currentHealth<unit.maxHealth)
-            {
-                unit.currentHealth++;
-            }
+            unit.OnHealing(1);
         }
     }
 

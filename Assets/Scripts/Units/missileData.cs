@@ -33,7 +33,7 @@ public class missileData : unitData
         HashSet<GameObject> ajacentUnits = GetEnemyHexesInRange(1);
             foreach (GameObject ajacentUnit in ajacentUnits)
             {
-                ajacentUnit.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(explosionDamage);
+                ajacentUnit.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(explosionDamage,false);
             }
         occupyingHex.GetComponent<hexData>().Empty();
         if (team == 0)

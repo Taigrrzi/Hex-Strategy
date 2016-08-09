@@ -83,7 +83,7 @@ public class mapControl : MonoBehaviour {
 
     public void AddRandomUnitType(GameObject unitToGiveType)
     {
-        switch (Mathf.FloorToInt(Random.Range(0,16)))
+        switch (Mathf.FloorToInt(Random.Range(0,20)))
         {
             case 0:
                 unitToGiveType.AddComponent<soldierData>();
@@ -132,6 +132,18 @@ public class mapControl : MonoBehaviour {
                 break;
             case 15:
                 unitToGiveType.AddComponent<mortarData>();
+                break;
+            case 16:
+                unitToGiveType.AddComponent<fastSoldierData>();
+                break;
+            case 17:
+                unitToGiveType.AddComponent<conduitData>();
+                break;
+            case 18:
+                unitToGiveType.AddComponent<gasserData>();
+                break;
+            case 19:
+                unitToGiveType.AddComponent<vampireData>();
                 break;
             default:
                 Debug.Log("Random is screwy");
@@ -341,11 +353,11 @@ public class mapControl : MonoBehaviour {
         return hexesInRect;
     }
 */
-    public HashSet<GameObject> SelectInRangeUnoccupied(GameObject centralHex, int range)
+    public HashSet<GameObject> SelectInRangeUnoccupied(GameObject centralHex, int range,bool donut)
     {
 
         HashSet<GameObject> hexesInRange = new HashSet<GameObject>();
-        foreach (GameObject currentHex in SelectInRange(centralHex, range))
+        foreach (GameObject currentHex in SelectInRange(centralHex, range,donut))
         {
             if (!currentHex.GetComponent<hexData>().occupied)
             {
@@ -355,11 +367,11 @@ public class mapControl : MonoBehaviour {
         return hexesInRange;
     }
 
-    public HashSet<GameObject> SelectInRangeOccupied(GameObject centralHex, int range)
+    public HashSet<GameObject> SelectInRangeOccupied(GameObject centralHex, int range,bool donut)
     {
 
         HashSet<GameObject> hexesInRange = new HashSet<GameObject>();
-        foreach (GameObject currentHex in SelectInRange(centralHex, range))
+        foreach (GameObject currentHex in SelectInRange(centralHex, range,donut))
         {
             if (currentHex.GetComponent<hexData>().occupied)
             {
@@ -418,7 +430,7 @@ public class mapControl : MonoBehaviour {
         }
     }
 
-    public HashSet<GameObject> SelectInRange(GameObject centralHex, int range) {
+    public HashSet<GameObject> SelectInRange(GameObject centralHex, int range,bool donut) {
         //int hexBuffer = ((centralHex.GetComponent<hexData>().myY % 2 == 0) ? 0 : 1);
         HashSet<GameObject> hexesInRange = new HashSet<GameObject>();
         int HexX = centralHex.GetComponent<hexData>().myX; 
@@ -440,61 +452,15 @@ public class mapControl : MonoBehaviour {
                 }
             }
         }
-
-        /*if (CheckHexExists(HexX+1,HexY)) {
-            hexesInRange.Add(hexes[HexX+1, HexY].gameObject);
-            if (range>1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[HexX+1,HexY].gameObject, range - 1));
-            }
+        
+        if (donut)
+        {
+            hexesInRange.Remove(centralHex);
         }
 
-        if (CheckHexExists(HexX - 1, HexY))
-        {
-            hexesInRange.Add(hexes[HexX-1, HexY].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[HexX-1, HexY].gameObject, range - 1));
-            }
-        }
-
-        if (CheckHexExists((HexX-1)+hexBuffer, HexY+1))
-        {
-            hexesInRange.Add(hexes[(HexX - 1) + hexBuffer, HexY + 1].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[(HexX - 1) + hexBuffer, HexY + 1].gameObject, range - 1));
-            }
-        }
-
-        if (CheckHexExists((HexX) + hexBuffer, HexY + 1))
-        {
-            hexesInRange.Add(hexes[HexX + hexBuffer, HexY+1].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[HexX + hexBuffer, HexY+1].gameObject, range - 1));
-            }
-        }
-
-        if (CheckHexExists((HexX-1) + hexBuffer, HexY - 1))
-        {
-            hexesInRange.Add(hexes[(HexX-1) + hexBuffer, HexY - 1].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[(HexX-1) + hexBuffer, HexY - 1].gameObject, range - 1));
-            }
-        }
-
-        if (CheckHexExists((HexX) + hexBuffer, HexY - 1))
-        {
-            hexesInRange.Add(hexes[HexX + hexBuffer, HexY - 1].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[HexX + hexBuffer, HexY - 1].gameObject, range - 1));
-            }
-        }*/
         return hexesInRange;
     }
+
 
     public bool CheckHexExists(int X,int Y)
     {

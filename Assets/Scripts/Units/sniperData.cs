@@ -27,7 +27,7 @@ public class sniperData : unitData {
             {
                 OnUncloaking();
                 OnActiveUse();
-                hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage);
+                hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage,true);
                 LoseFocus();
                 mapControl.globalMap.currentActionPoints--;
             }
