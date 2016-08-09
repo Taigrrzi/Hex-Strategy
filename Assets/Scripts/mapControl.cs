@@ -29,6 +29,9 @@ public class mapControl : MonoBehaviour {
     public int startActionPoints=2;
     public int currentActionPoints;
 
+    public bool explosionInProgress = false;
+    public List<damage> damageQueue;
+
     public Image turnDisplay;
     public Text actionPointDisplay;
     public GameObject selectedUnit;
@@ -37,7 +40,7 @@ public class mapControl : MonoBehaviour {
 
     // Use this for initialization
     void Awake () {
-
+        damageQueue = new List<damage>();
         globalMap = this;
         hexes = new hexData[mapWidth + 2, mapHeight];
         GenerateMap();
@@ -83,7 +86,7 @@ public class mapControl : MonoBehaviour {
 
     public void AddRandomUnitType(GameObject unitToGiveType)
     {
-        switch (Mathf.FloorToInt(Random.Range(0,20)))
+        switch (Mathf.FloorToInt(Random.Range(0,31)))
         {
             case 0:
                 unitToGiveType.AddComponent<soldierData>();
@@ -144,6 +147,42 @@ public class mapControl : MonoBehaviour {
                 break;
             case 19:
                 unitToGiveType.AddComponent<vampireData>();
+                break;
+            case 20:
+                unitToGiveType.AddComponent<boobyTrapData>();
+                break;
+            case 21:
+                unitToGiveType.AddComponent<investigatorData>();
+                break;
+            case 22:
+                unitToGiveType.AddComponent<ragerData>();
+                break;
+            case 23:
+                unitToGiveType.AddComponent<chargerData>();
+                break;
+            case 24:
+                unitToGiveType.AddComponent<paladinData>();
+                break;
+            case 25:
+                unitToGiveType.AddComponent<sprinterData>();
+                break;
+            case 26:
+                unitToGiveType.AddComponent<turretData>();
+                break;
+            case 27:
+                unitToGiveType.AddComponent<demonData>();
+                break;
+            case 28:
+                unitToGiveType.AddComponent<murdererData>();
+                break;
+            case 29:
+                unitToGiveType.AddComponent<pathFinderData>();
+                break;
+            case 30:
+                unitToGiveType.AddComponent<warperData>();
+                break;
+            case 31:
+                unitToGiveType.AddComponent<debufferData>();
                 break;
             default:
                 Debug.Log("Random is screwy");
@@ -518,5 +557,18 @@ public class mapControl : MonoBehaviour {
         {
             selectedUnit.GetComponent<unitData>().OnActivePressed();
         }
+    }
+
+    public void EndExplosion()
+    {
+        if (damageQueue.Count > 0)
+        {
+            foreach (damage queuedDamage in damageQueue)
+            {
+                queuedDamage.damagedObject.GetComponent<unitData>().OnTakingDamage(queuedDamage.damageAmount, queuedDamage.uncloak, queuedDamage.dealer);
+            }
+        }
+        explosionInProgress = false;
+        damageQueue = new List<damage>();
     }
 }

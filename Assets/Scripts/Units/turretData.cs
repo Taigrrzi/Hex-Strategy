@@ -2,22 +2,22 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class armorerData : unitData
+public class turretData : unitData
 {
 
-    public int range;
-    public int armorAmount;
+    int rangedDamage;
+    int range;
     void Start()
     {
-        range = 1;
-        maxHealth = 8;
-        currentHealth = 8;
-        baseAttack = 2;
-        baseMoveSpeed = 1;
-        armorAmount = 3;
-        unitName = "Armorer";
-        unitDesc = "Decent stats, and can give stuff health";
-        activeName = "Give Armor";
+        maxHealth = 10;
+        currentHealth = 10;
+        baseAttack = 0;
+        baseMoveSpeed = 0;
+        rangedDamage = 3;
+        range = 2;
+        unitName = "Turret";
+        unitDesc = "Can't Move, but can shoot";
+        activeName = "Fire";
     }
 
     public override void OnHexTouchedSelected(GameObject hexTouched)
@@ -27,11 +27,9 @@ public class armorerData : unitData
         {
             if (validHexes.Contains(hexTouched) && mapControl.globalMap.currentActionPoints > 0)
             {
+                OnUncloaking();
                 OnActiveUse();
-                unitData unit = hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>();
-                unit.currentHealth += armorAmount;
-                unit.maxHealth += armorAmount;
-                unit.buffHealth += armorAmount;
+                hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage, true,gameObject);
                 LoseFocus();
                 mapControl.globalMap.currentActionPoints--;
             }
@@ -48,13 +46,13 @@ public class armorerData : unitData
         else
         {
             mode = 3;
-            validHexes = GetAllyHexesInRange(range);
-            mapControl.globalMap.HighlightHash(validHexes, Color.green);
+            validHexes = GetEnemyHexesInRange(range);
+            mapControl.globalMap.HighlightHash(validHexes, Color.red);
             if (validHexes.Count == 0)
             {
                 mode = 0;
             }
         }
     }
-}
 
+}

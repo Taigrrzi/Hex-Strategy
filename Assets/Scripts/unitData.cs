@@ -8,6 +8,7 @@ public class unitData : MonoBehaviour {
     public int maxHealth;
     public int currentHealth;
     public int baseAttack;
+    public int buffHealth=0;
     public int baseMoveSpeed;
     public int currentAttack;
     public int buffAttack=0;
@@ -63,7 +64,7 @@ public class unitData : MonoBehaviour {
                 if (validHexes.Contains(hexTouched) && mapControl.globalMap.currentActionPoints > 0)
                 {
                     OnAttacking();
-                    hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(currentAttack,true);
+                    hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(currentAttack,true,gameObject);
                     LoseFocus();
                     mapControl.globalMap.currentActionPoints--;
                 }
@@ -227,10 +228,18 @@ public class unitData : MonoBehaviour {
         {
             if (cloaked)
             {
+                if (shielded)
+                {
+                    shieldObj.SetActive(false);
+                }
                 GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit_cloak");
             }
         }
         else {
+            if (shielded)
+            {
+                shieldObj.SetActive(true);
+            }
             GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit");
         }
     }
@@ -241,7 +250,7 @@ public class unitData : MonoBehaviour {
         GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit");
     }
 
-    public virtual void OnTakingDamage(int damage,bool uncloak)
+    public virtual void OnTakingDamage(int damage,bool uncloak,GameObject dealer)
     {
         if (uncloak)
         {
@@ -256,8 +265,14 @@ public class unitData : MonoBehaviour {
         }
         if (currentHealth<=0)
         {
+            dealer.GetComponent<unitData>().OnKilling();
             OnDeath();
         }
+    }
+
+    public virtual void OnKilling()
+    {
+
     }
 
     public virtual void OnDeath() {
@@ -301,6 +316,16 @@ public class unitData : MonoBehaviour {
         mapControl.globalMap.selectedUnit = null;
         mapControl.globalMap.ClearHighlights();
         mode = 0;
+    }
+
+    public void StartExplosion()
+    {
+        mapControl.globalMap.explosionInProgress = true;
+    }
+
+    public void EndExplosion()
+    {
+        mapControl.globalMap.EndExplosion();
     }
 
 }

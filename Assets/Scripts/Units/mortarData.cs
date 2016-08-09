@@ -29,7 +29,7 @@ public class mortarData : unitData
                 {
                     if (bombedHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().team!=team)
                     {
-                        bombedHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage,false);
+                        bombedHex.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage,false,gameObject);
                     }
                 }
 
