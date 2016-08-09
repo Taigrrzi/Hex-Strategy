@@ -8,6 +8,7 @@ public class unitData : MonoBehaviour {
     public int maxHealth;
     public int currentHealth;
     public int baseAttack;
+    public int buffHealth=0;
     public int baseMoveSpeed;
     public int currentAttack;
     public int buffAttack=0;
@@ -72,7 +73,7 @@ public class unitData : MonoBehaviour {
                 if (validHexes.Contains(hexTouched) && mapControl.globalMap.currentActionPoints > 0)
                 {
                     OnAttacking();
-                    hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(currentAttack);
+                    hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(currentAttack,true,gameObject);
                     LoseFocus();
                     mapControl.globalMap.currentActionPoints--;
                 }
@@ -90,6 +91,15 @@ public class unitData : MonoBehaviour {
     {
         currentAttack = baseAttack+buffAttack+occupyingHex.GetComponent<hexData>().buffAttack;
         OnUncloaking();
+    }
+
+    public virtual void OnHealing(int healAmount)
+    {
+        currentHealth += healAmount;
+        if (currentHealth>maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
     }
 
     public virtual void OnMovePressed() {
@@ -114,7 +124,7 @@ public class unitData : MonoBehaviour {
             {
                 if (baseMoveSpeed + buffMoveSpeed > 0)
                 {
-                    validHexes = mapControl.globalMap.SelectInRangeUnoccupied(occupyingHex.gameObject, baseMoveSpeed + buffMoveSpeed);
+                    validHexes = mapControl.globalMap.SelectInRangeUnoccupied(occupyingHex.gameObject, baseMoveSpeed + buffMoveSpeed,true);
                 } else
                 {
                     mode = 0;
@@ -160,7 +170,7 @@ public class unitData : MonoBehaviour {
 
     public HashSet<GameObject> GetEnemyHexesInRange (int hexRange) {
         HashSet<GameObject> tempHexes = new HashSet<GameObject>();
-            foreach (GameObject currentHex in mapControl.globalMap.SelectInRangeOccupied(occupyingHex, hexRange))
+            foreach (GameObject currentHex in mapControl.globalMap.SelectInRangeOccupied(occupyingHex, hexRange, true))
             {
                 if (currentHex.GetComponent<hexData>().occupyingObject.tag == "Unit")
                 {
@@ -176,7 +186,7 @@ public class unitData : MonoBehaviour {
     public HashSet<GameObject> GetAllyHexesInRange(int hexRange)
     {
         HashSet<GameObject> tempHexes = new HashSet<GameObject>();
-            foreach (GameObject currentHex in mapControl.globalMap.SelectInRangeOccupied(occupyingHex, hexRange))
+            foreach (GameObject currentHex in mapControl.globalMap.SelectInRangeOccupied(occupyingHex, hexRange,false))
             {
                 if (currentHex.GetComponent<hexData>().occupyingObject.tag == "Unit")
                 {
@@ -227,10 +237,18 @@ public class unitData : MonoBehaviour {
         {
             if (cloaked)
             {
+                if (shielded)
+                {
+                    shieldObj.SetActive(false);
+                }
                 GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit_cloak");
             }
         }
         else {
+            if (shielded)
+            {
+                shieldObj.SetActive(true);
+            }
             GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit");
         }
     }
@@ -241,9 +259,12 @@ public class unitData : MonoBehaviour {
         GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit");
     }
 
-    public virtual void OnTakingDamage(int damage)
+    public virtual void OnTakingDamage(int damage,bool uncloak,GameObject dealer)
     {
-        OnUncloaking();
+        if (uncloak)
+        {
+            OnUncloaking();
+        }
         if (!shielded)
         {
             currentHealth -= (int)Mathf.Clamp(((damage-baseArmor)-buffArmor-occupyingHex.GetComponent<hexData>().buffArmor),0,Mathf.Infinity);
@@ -253,8 +274,14 @@ public class unitData : MonoBehaviour {
         }
         if (currentHealth<=0)
         {
+            dealer.GetComponent<unitData>().OnKilling();
             OnDeath();
         }
+    }
+
+    public virtual void OnKilling()
+    {
+
     }
 
     public virtual void OnDeath() {
@@ -298,6 +325,16 @@ public class unitData : MonoBehaviour {
         mapControl.globalMap.selectedUnit = null;
         mapControl.globalMap.ClearHighlights();
         mode = 0;
+    }
+
+    public void StartExplosion()
+    {
+        mapControl.globalMap.explosionInProgress = true;
+    }
+
+    public void EndExplosion()
+    {
+        mapControl.globalMap.EndExplosion();
     }
 
 }

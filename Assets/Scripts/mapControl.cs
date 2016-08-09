@@ -29,6 +29,9 @@ public class mapControl : Control {
     public int startActionPoints=2;
     public int currentActionPoints;
 
+    public bool explosionInProgress = false;
+    public List<damage> damageQueue;
+
     public Image turnDisplay;
     public Text actionPointDisplay;
     //    public GameObject selectedUnit;
@@ -39,7 +42,7 @@ public class mapControl : Control {
 
     // Use this for initialization
     void Awake () {
-
+        damageQueue = new List<damage>();
         globalMap = this;
         hexes = new hexData[mapWidth + 2, mapHeight];
         GenerateMap();
@@ -91,7 +94,7 @@ public class mapControl : Control {
             {
                 GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
                 Team0Units.Add(newUnit);
-                AddUnitType(newUnit, Mathf.FloorToInt(Random.Range(0, 16)));
+                AddUnitType(newUnit, Mathf.FloorToInt(Random.Range(0, 31)));
                 newUnit.name = "Unit: " + i;
                 newUnit.GetComponent<unitData>().team = 0;
                 newUnit.GetComponent<unitData>().teamStartHexes = Team0StartHexes;
@@ -103,7 +106,7 @@ public class mapControl : Control {
             {
                 GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
                 Team1Units.Add(newUnit);
-                AddUnitType(newUnit, Mathf.FloorToInt(Random.Range(0, 16)));
+                AddUnitType(newUnit, Mathf.FloorToInt(Random.Range(0, 31)));
                 newUnit.name = "Enemy: " + i;
                 newUnit.GetComponent<unitData>().team = 1;
                 newUnit.GetComponent<unitData>().teamStartHexes = Team1StartHexes;
@@ -165,6 +168,54 @@ public class mapControl : Control {
                 break;
             case 15:
                 unitToGiveType.AddComponent<mortarData>();
+                break;
+            case 16:
+                unitToGiveType.AddComponent<fastSoldierData>();
+                break;
+            case 17:
+                unitToGiveType.AddComponent<conduitData>();
+                break;
+            case 18:
+                unitToGiveType.AddComponent<gasserData>();
+                break;
+            case 19:
+                unitToGiveType.AddComponent<vampireData>();
+                break;
+            case 20:
+                unitToGiveType.AddComponent<boobyTrapData>();
+                break;
+            case 21:
+                unitToGiveType.AddComponent<investigatorData>();
+                break;
+            case 22:
+                unitToGiveType.AddComponent<ragerData>();
+                break;
+            case 23:
+                unitToGiveType.AddComponent<chargerData>();
+                break;
+            case 24:
+                unitToGiveType.AddComponent<paladinData>();
+                break;
+            case 25:
+                unitToGiveType.AddComponent<sprinterData>();
+                break;
+            case 26:
+                unitToGiveType.AddComponent<turretData>();
+                break;
+            case 27:
+                unitToGiveType.AddComponent<demonData>();
+                break;
+            case 28:
+                unitToGiveType.AddComponent<murdererData>();
+                break;
+            case 29:
+                unitToGiveType.AddComponent<pathFinderData>();
+                break;
+            case 30:
+                unitToGiveType.AddComponent<warperData>();
+                break;
+            case 31:
+                unitToGiveType.AddComponent<debufferData>();
                 break;
             default:
                 Debug.Log("Random is screwy");
@@ -378,11 +429,11 @@ public class mapControl : Control {
         return hexesInRect;
     }
 */
-    public HashSet<GameObject> SelectInRangeUnoccupied(GameObject centralHex, int range)
+    public HashSet<GameObject> SelectInRangeUnoccupied(GameObject centralHex, int range,bool donut)
     {
 
         HashSet<GameObject> hexesInRange = new HashSet<GameObject>();
-        foreach (GameObject currentHex in SelectInRange(centralHex, range))
+        foreach (GameObject currentHex in SelectInRange(centralHex, range,donut))
         {
             if (!currentHex.GetComponent<hexData>().occupied)
             {
@@ -392,11 +443,11 @@ public class mapControl : Control {
         return hexesInRange;
     }
 
-    public HashSet<GameObject> SelectInRangeOccupied(GameObject centralHex, int range)
+    public HashSet<GameObject> SelectInRangeOccupied(GameObject centralHex, int range,bool donut)
     {
 
         HashSet<GameObject> hexesInRange = new HashSet<GameObject>();
-        foreach (GameObject currentHex in SelectInRange(centralHex, range))
+        foreach (GameObject currentHex in SelectInRange(centralHex, range,donut))
         {
             if (currentHex.GetComponent<hexData>().occupied)
             {
@@ -455,7 +506,7 @@ public class mapControl : Control {
         }
     }
 
-    public HashSet<GameObject> SelectInRange(GameObject centralHex, int range) {
+    public HashSet<GameObject> SelectInRange(GameObject centralHex, int range,bool donut) {
         //int hexBuffer = ((centralHex.GetComponent<hexData>().myY % 2 == 0) ? 0 : 1);
         HashSet<GameObject> hexesInRange = new HashSet<GameObject>();
         int HexX = centralHex.GetComponent<hexData>().myX; 
@@ -477,61 +528,15 @@ public class mapControl : Control {
                 }
             }
         }
-
-        /*if (CheckHexExists(HexX+1,HexY)) {
-            hexesInRange.Add(hexes[HexX+1, HexY].gameObject);
-            if (range>1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[HexX+1,HexY].gameObject, range - 1));
-            }
+        
+        if (donut)
+        {
+            hexesInRange.Remove(centralHex);
         }
 
-        if (CheckHexExists(HexX - 1, HexY))
-        {
-            hexesInRange.Add(hexes[HexX-1, HexY].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[HexX-1, HexY].gameObject, range - 1));
-            }
-        }
-
-        if (CheckHexExists((HexX-1)+hexBuffer, HexY+1))
-        {
-            hexesInRange.Add(hexes[(HexX - 1) + hexBuffer, HexY + 1].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[(HexX - 1) + hexBuffer, HexY + 1].gameObject, range - 1));
-            }
-        }
-
-        if (CheckHexExists((HexX) + hexBuffer, HexY + 1))
-        {
-            hexesInRange.Add(hexes[HexX + hexBuffer, HexY+1].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[HexX + hexBuffer, HexY+1].gameObject, range - 1));
-            }
-        }
-
-        if (CheckHexExists((HexX-1) + hexBuffer, HexY - 1))
-        {
-            hexesInRange.Add(hexes[(HexX-1) + hexBuffer, HexY - 1].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[(HexX-1) + hexBuffer, HexY - 1].gameObject, range - 1));
-            }
-        }
-
-        if (CheckHexExists((HexX) + hexBuffer, HexY - 1))
-        {
-            hexesInRange.Add(hexes[HexX + hexBuffer, HexY - 1].gameObject);
-            if (range > 1)
-            {
-                hexesInRange.UnionWith(SelectInRange(hexes[HexX + hexBuffer, HexY - 1].gameObject, range - 1));
-            }
-        }*/
         return hexesInRange;
     }
+
 
     public bool CheckHexExists(int X,int Y)
     {
@@ -589,5 +594,18 @@ public class mapControl : Control {
         {
             selectedUnit.GetComponent<unitData>().OnActivePressed();
         }
+    }
+
+    public void EndExplosion()
+    {
+        if (damageQueue.Count > 0)
+        {
+            foreach (damage queuedDamage in damageQueue)
+            {
+                queuedDamage.damagedObject.GetComponent<unitData>().OnTakingDamage(queuedDamage.damageAmount, queuedDamage.uncloak, queuedDamage.dealer);
+            }
+        }
+        explosionInProgress = false;
+        damageQueue = new List<damage>();
     }
 }

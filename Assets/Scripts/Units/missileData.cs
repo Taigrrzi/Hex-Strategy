@@ -22,29 +22,22 @@ public class missileData : unitData
     {
         if (mapControl.globalMap.currentActionPoints > 0)
         {
-            OnDeath();
             mapControl.globalMap.currentActionPoints--;
+            OnDeath();
         }
     }
 
     public override void OnDeath()
     {
-        occupyingHex.GetComponent<hexData>().Empty();
         HashSet<GameObject> ajacentUnits = GetEnemyHexesInRange(1);
+        StartExplosion();
             foreach (GameObject ajacentUnit in ajacentUnits)
             {
-                ajacentUnit.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(explosionDamage);
+                ajacentUnit.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(explosionDamage,false,gameObject);
             }
+        EndExplosion();
         occupyingHex.GetComponent<hexData>().Empty();
-        if (team == 0)
-        {
-            mapControl.globalMap.Team0Units.Remove(gameObject);
-        }
-        else
-        {
-            mapControl.globalMap.Team1Units.Remove(gameObject);
-        }
-        Destroy(gameObject);
+        base.OnDeath();
     }
 
 }

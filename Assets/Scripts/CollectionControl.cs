@@ -127,7 +127,7 @@ public class CollectionControl : Control {
 
     void PopulateCollection()
     {
-        for (int i = 0; i < 16; i++)
+        for (int i = 0; i < 31; i++)
         {
             GameObject newUnit = (GameObject)Instantiate(Resources.Load("Unit"));
             AddUnitType(newUnit,i);
@@ -208,6 +208,54 @@ public class CollectionControl : Control {
                 break;
             case 15:
                 unitToGiveType.AddComponent<mortarData>();
+                break;
+            case 16:
+                unitToGiveType.AddComponent<fastSoldierData>();
+                break;
+            case 17:
+                unitToGiveType.AddComponent<conduitData>();
+                break;
+            case 18:
+                unitToGiveType.AddComponent<gasserData>();
+                break;
+            case 19:
+                unitToGiveType.AddComponent<vampireData>();
+                break;
+            case 20:
+                unitToGiveType.AddComponent<boobyTrapData>();
+                break;
+            case 21:
+                unitToGiveType.AddComponent<investigatorData>();
+                break;
+            case 22:
+                unitToGiveType.AddComponent<ragerData>();
+                break;
+            case 23:
+                unitToGiveType.AddComponent<chargerData>();
+                break;
+            case 24:
+                unitToGiveType.AddComponent<paladinData>();
+                break;
+            case 25:
+                unitToGiveType.AddComponent<sprinterData>();
+                break;
+            case 26:
+                unitToGiveType.AddComponent<turretData>();
+                break;
+            case 27:
+                unitToGiveType.AddComponent<demonData>();
+                break;
+            case 28:
+                unitToGiveType.AddComponent<murdererData>();
+                break;
+            case 29:
+                unitToGiveType.AddComponent<pathFinderData>();
+                break;
+            case 30:
+                unitToGiveType.AddComponent<warperData>();
+                break;
+            case 31:
+                unitToGiveType.AddComponent<debufferData>();
                 break;
             default:
                 Debug.Log("Random is screwy");
