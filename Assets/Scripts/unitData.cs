@@ -25,10 +25,19 @@ public class unitData : MonoBehaviour {
     public bool shielded=false;
     public bool cloaked=true;
     public HashSet<GameObject> teamStartHexes;
+    public int id;
+
+    Control controller = mapControl.globalMap;
 
     public void Awake()
     {
         uncloakedSprite = Resources.Load<Sprite>("best_unit");
+
+        GameObject collection = GameObject.Find("CollectionManager");
+        if (collection != null)
+        {
+            controller = collection.GetComponent<CollectionControl>();
+        }
     }
 
     public virtual void OnHexTouchedSelected(GameObject hexTouched)
@@ -42,11 +51,11 @@ public class unitData : MonoBehaviour {
                     //{
                         if (hexTouched == occupyingHex)
                         {
-                            mapControl.globalMap.selectedUnit = null;
+                            controller.selectedUnit = null;
                         }
                         else
                         {
-                            mapControl.globalMap.selectedUnit = hexTouched.GetComponent<hexData>().occupyingObject;
+                            controller.selectedUnit = hexTouched.GetComponent<hexData>().occupyingObject;
                         }
                     //}
                 }
