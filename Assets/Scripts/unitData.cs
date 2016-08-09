@@ -227,10 +227,18 @@ public class unitData : MonoBehaviour {
         {
             if (cloaked)
             {
+                if (shielded)
+                {
+                    shieldObj.SetActive(false);
+                }
                 GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit_cloak");
             }
         }
         else {
+            if (shielded)
+            {
+                shieldObj.SetActive(true);
+            }
             GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit");
         }
     }
@@ -301,6 +309,16 @@ public class unitData : MonoBehaviour {
         mapControl.globalMap.selectedUnit = null;
         mapControl.globalMap.ClearHighlights();
         mode = 0;
+    }
+
+    public void StartExplosion()
+    {
+        mapControl.globalMap.explosionInProgress = true;
+    }
+
+    public void EndExplosion()
+    {
+        mapControl.globalMap.EndExplosion();
     }
 
 }

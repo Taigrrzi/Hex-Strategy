@@ -30,6 +30,7 @@ public class grenadierData : unitData
                 OnActiveUse();
                 hexTouched.GetComponent<hexData>().occupyingObject.GetComponent<unitData>().OnTakingDamage(rangedDamage,true);
                 HashSet<GameObject> surroundingOccupied = mapControl.globalMap.SelectInRangeOccupied(hexTouched, 1,true);
+                StartExplosion();
                 foreach (GameObject surroundingThing in surroundingOccupied)
                 {
                     if (surroundingThing.tag=="Unit"&&surroundingThing.GetComponent<unitData>().team!=team)
@@ -37,6 +38,7 @@ public class grenadierData : unitData
                         surroundingThing.GetComponent<unitData>().OnTakingDamage(rangedDamage,false);
                     }
                 }
+                EndExplosion();
                 LoseFocus();
                 mapControl.globalMap.currentActionPoints--;
             }
