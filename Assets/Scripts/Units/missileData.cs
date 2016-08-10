@@ -16,6 +16,13 @@ public class missileData : unitData
         unitName = "Missile";
         unitDesc = "Can move fast as blow up";
         activeName = "Explode";
+        StartSprite();
+    }
+
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_missile");
     }
 
     public override void OnActivePressed()

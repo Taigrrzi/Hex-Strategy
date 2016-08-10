@@ -8,6 +8,7 @@ public class CollectionControl : Control {
     public int mapHeight;
     public HashSet<GameObject> validHexes;
     public GameObject hexPrefab;
+    public bool clicked;
 
 //    public int teamTurn = 0;
 
@@ -42,14 +43,15 @@ public class CollectionControl : Control {
 
     void Update()
     {
+        clicked = Input.GetMouseButtonUp(0);
         hexOutline.SetActive((selectedUnit != null) ? true : false);
 
         if (selectedUnit != null)
         {
             hexOutline.transform.position = selectedUnit.transform.position;
-            if (Input.touchCount >= 1)
+            if (Input.touchCount >= 1 || clicked)
             {
-                if (Input.touches[0].phase == TouchPhase.Ended)
+                if (clicked || Input.touches[0].phase == TouchPhase.Ended)
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
@@ -63,9 +65,9 @@ public class CollectionControl : Control {
         }
         else
         {
-            if (Input.touchCount >= 1)
+            if (Input.touchCount >= 1 || clicked)
             {
-                if (Input.touches[0].phase == TouchPhase.Ended)
+                if (clicked || Input.touches[0].phase == TouchPhase.Ended)
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);

@@ -18,8 +18,13 @@ public class grenadierData : unitData
         unitName = "Hillbilly";
         unitDesc = "Shoots foreigners";
         activeName = "Shoot Shotgun";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_grenadier");
+    }
     public override void OnHexTouchedSelected(GameObject hexTouched)
     {
         base.OnHexTouchedSelected(hexTouched);

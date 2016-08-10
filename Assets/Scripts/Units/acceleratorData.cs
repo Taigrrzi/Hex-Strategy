@@ -16,8 +16,13 @@ public class acceleratorData : unitData
         unitName = "Cobbler";
         unitDesc = "Decent stats, and can give stuff movement speed";
         activeName = "Give Shoes";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_cobbler");
+    }
     public override void OnHexTouchedSelected(GameObject hexTouched)
     {
         base.OnHexTouchedSelected(hexTouched);

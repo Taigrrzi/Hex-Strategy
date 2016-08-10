@@ -11,5 +11,11 @@ public class glasscannonData : unitData
         baseMoveSpeed = 1;
         unitName = "Glass Cannon";
         unitDesc = "A cannon made of glass";
+        StartSprite();
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_glassCannon");
     }
 }

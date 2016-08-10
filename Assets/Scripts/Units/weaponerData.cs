@@ -16,6 +16,12 @@ public class weaponerData : unitData
         unitName = "Swordsmith";
         unitDesc = "Decent stats, and can give stuff attack";
         activeName = "Give Sword";
+        StartSprite();
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_weaponer");
     }
 
     public override void OnHexTouchedSelected(GameObject hexTouched)

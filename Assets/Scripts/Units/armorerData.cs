@@ -18,8 +18,13 @@ public class armorerData : unitData
         unitName = "Armorer";
         unitDesc = "Decent stats, and can give stuff health";
         activeName = "Give Armor";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_armorer");
+    }
     public override void OnHexTouchedSelected(GameObject hexTouched)
     {
         base.OnHexTouchedSelected(hexTouched);

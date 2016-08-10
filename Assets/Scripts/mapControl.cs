@@ -308,9 +308,9 @@ public class mapControl : Control {
         if (selectedUnit != null)
         {
             hexOutline.transform.position = selectedUnit.transform.position;
-            if (Input.touchCount >= 1)
+            if (Input.touchCount >= 1||Input.GetMouseButtonUp(0))
             {
-                if (Input.touches[0].phase == TouchPhase.Ended)
+                if (Input.GetMouseButtonUp(0) || Input.touches[0].phase == TouchPhase.Ended)
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
@@ -324,9 +324,9 @@ public class mapControl : Control {
         }
         else
         {
-            if (Input.touchCount >= 1)
+            if (Input.touchCount >= 1 || Input.GetMouseButtonUp(0))
             {
-                if (Input.touches[0].phase == TouchPhase.Ended)
+                if (Input.GetMouseButtonUp(0) || Input.touches[0].phase == TouchPhase.Ended)
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);

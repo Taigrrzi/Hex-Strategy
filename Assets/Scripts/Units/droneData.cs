@@ -11,7 +11,7 @@ public class droneData : unitData
         baseMoveSpeed = 2;
         unitName = "Drone";
         unitDesc = "Follows Orders";
-        StartSprite();
+        StartSprite();  
     }
 
     public override void StartSprite()

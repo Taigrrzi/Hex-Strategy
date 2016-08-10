@@ -7,7 +7,7 @@ public class queenData : unitData
 
     void Start()
     {
-        maxHealth = 1;
+        maxHealth = 8;
         currentHealth = 8;
         baseAttack = 1;
         baseMoveSpeed = 1;
