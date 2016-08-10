@@ -32,13 +32,17 @@ public class unitData : MonoBehaviour {
 
     public void Awake()
     {
-        uncloakedSprite = Resources.Load<Sprite>("best_unit");
-
+        StartSprite();
         GameObject collection = GameObject.Find("CollectionManager");
         if (collection != null)
         {
             controller = collection.GetComponent<CollectionControl>();
         }
+    }
+
+    public virtual void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_blank");
     }
 
     public virtual void OnHexTouchedSelected(GameObject hexTouched)
@@ -241,7 +245,7 @@ public class unitData : MonoBehaviour {
                 {
                     shieldObj.SetActive(false);
                 }
-                GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit_cloak");
+                GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("devUnit_cloaked");
             }
         }
         else {
@@ -249,14 +253,19 @@ public class unitData : MonoBehaviour {
             {
                 shieldObj.SetActive(true);
             }
-            GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit");
+            GetComponent<SpriteRenderer>().sprite = uncloakedSprite;
         }
+    }
+
+    public void CollectionStart()
+    {
+        GetComponent<SpriteRenderer>().sprite = uncloakedSprite; 
     }
 
     public void OnUncloaking()
     {
         cloaked = false;
-        GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("best_unit");
+        UpdateSprite();
     }
 
     public virtual void OnTakingDamage(int damage,bool uncloak,GameObject dealer)

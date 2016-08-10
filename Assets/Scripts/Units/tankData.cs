@@ -11,5 +11,12 @@ public class tankData : unitData
         baseMoveSpeed = 1;
         unitName = "Tank";
         unitDesc = "Has a lot of health, but not much else";
+        StartSprite();
+
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_tank");
     }
 }

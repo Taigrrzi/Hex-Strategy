@@ -72,6 +72,7 @@ public class mapControl : Control {
                 newUnit.GetComponent<unitData>().team = 0;
                 newUnit.GetComponent<unitData>().teamStartHexes = Team0StartHexes;
                 CreateOnHex(newUnit, RandomHexInBounds(Team0StartHexes));
+                newUnit.GetComponent<SpriteRenderer>().color = Color.green;
                 newUnit.GetComponent<unitData>().OnGameStart();
             }
             for (int i = 0; i < Team1StartUnitAmount; i++)
@@ -99,6 +100,7 @@ public class mapControl : Control {
                 newUnit.GetComponent<unitData>().team = 0;
                 newUnit.GetComponent<unitData>().teamStartHexes = Team0StartHexes;
                 CreateOnHex(newUnit, RandomHexInBounds(Team0StartHexes));
+                newUnit.GetComponent<SpriteRenderer>().color = Color.green;
                 newUnit.GetComponent<unitData>().OnGameStart();
             }
 
@@ -275,6 +277,7 @@ public class mapControl : Control {
         unit.GetComponent<unitData>().occupyingHex = hex;
         hex.GetComponent<hexData>().Fill(unit);
         unit.transform.position = hex.transform.position;
+        unit.GetComponent<unitData>().StartSprite();
     }
 
     public void UnitMoved(GameObject movedUnit)

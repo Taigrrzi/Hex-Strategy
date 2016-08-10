@@ -9,6 +9,7 @@ public class witchData : unitData
     int range;
     void Start()
     {
+        markedTargets = new List<GameObject>();
         maxHealth = 7;
         currentHealth = 7;
         baseAttack = 2;

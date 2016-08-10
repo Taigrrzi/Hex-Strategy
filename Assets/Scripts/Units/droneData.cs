@@ -11,5 +11,11 @@ public class droneData : unitData
         baseMoveSpeed = 2;
         unitName = "Drone";
         unitDesc = "Follows Orders";
+        StartSprite();
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_drone");
     }
 }

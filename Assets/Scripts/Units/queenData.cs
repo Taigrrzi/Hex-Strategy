@@ -14,6 +14,12 @@ public class queenData : unitData
         unitName = "Hive Queen";
         unitDesc = "Eugh";
         activeName = "Give Birth";
+        StartSprite();
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_queen");
     }
 
     public override void OnHexTouchedSelected(GameObject hexTouched)

@@ -18,6 +18,12 @@ public class scoutData : unitData
         unitName = "Scout";
         unitDesc = "Squishy, fast moving, designed to uncloak units then escape";
         activeName = "Poke";
+        StartSprite();
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_scout");
     }
 
     public override void OnHexTouchedSelected(GameObject hexTouched)

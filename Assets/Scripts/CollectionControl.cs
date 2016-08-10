@@ -133,6 +133,7 @@ public class CollectionControl : Control {
             AddUnitType(newUnit,i);
             newUnit.name = "Unit: " + i;
             CreateOnHex(newUnit, RandomHexInBounds(validHexes));
+            newUnit.GetComponent<unitData>().CollectionStart();
         }
     }
 
@@ -155,6 +156,7 @@ public class CollectionControl : Control {
         unit.GetComponent<unitData>().occupyingHex = hex;
         hex.GetComponent<hexData>().Fill(unit);
         unit.transform.position = hex.transform.position;
+        unit.GetComponent<unitData>().StartSprite();
     }
 
     public void Back()

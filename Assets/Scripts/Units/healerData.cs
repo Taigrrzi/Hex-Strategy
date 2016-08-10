@@ -16,6 +16,12 @@ public class healerData : unitData
         unitName = "Healer";
         unitDesc = "Can heal stuff :), goes well with units with lots of health";
         activeName = "Heal";
+        StartSprite();
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_healer");
     }
 
     public override void OnHexTouchedSelected(GameObject hexTouched)

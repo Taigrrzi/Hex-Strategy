@@ -17,6 +17,13 @@ public class sniperData : unitData {
         unitName = "Sniper";
         unitDesc = "Squishy and poor at short range, but excels at long range combat";
         activeName = "Snipe";
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_sniper");
+        StartSprite();
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_sniper");
     }
 
     public override void OnHexTouchedSelected (GameObject hexTouched) {

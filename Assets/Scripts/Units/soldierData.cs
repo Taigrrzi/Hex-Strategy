@@ -11,5 +11,12 @@ public class soldierData : unitData
         baseMoveSpeed = 1;
         unitName = "Soldier";
         unitDesc = "All rounder, solid, boring";
+        StartSprite();
     }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_soldier");
+    }
+
 }
