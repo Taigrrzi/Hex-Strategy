@@ -12,5 +12,11 @@ public class spiritData : unitData
         unitName = "Spirit";
         unitDesc = "Spoooky";
         cloaked = false;
+        StartSprite();
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_spirit");
     }
 }

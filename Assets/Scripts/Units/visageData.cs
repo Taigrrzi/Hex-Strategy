@@ -13,8 +13,13 @@ public class visageData : unitData
         baseMoveSpeed = 1;
         unitName = "Visage";
         unitDesc = "Has 2 shadows";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_visage");
+    }
     public override void OnDeath()
     {
         occupyingHex.GetComponent<hexData>().Empty();

@@ -15,8 +15,13 @@ public class leaderData : unitData
         baseMoveSpeed = 1;
         unitName = "Leader";
         unitDesc = "Increases Nearby Ally's Attack";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_leader");
+    }
     public override void OnGameStart()
     {
         base.OnGameStart();

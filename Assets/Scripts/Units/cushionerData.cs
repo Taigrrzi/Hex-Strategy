@@ -15,8 +15,13 @@ public class cushionerData : unitData
         baseMoveSpeed = 1;
         unitName = "Cushioner";
         unitDesc = "Increases Nearby Ally's Armor";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_cushioner");
+    }
     public override void OnGameStart()
     {
         base.OnGameStart();

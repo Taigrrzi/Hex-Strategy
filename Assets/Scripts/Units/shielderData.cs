@@ -18,8 +18,13 @@ public class shielderData : unitData
         unitName = "Shielder";
         unitDesc = "Can give stuff divine shield";
         activeName = "Shield";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_shielder");
+    }
     public override void OnHexTouchedSelected(GameObject hexTouched)
     {
         base.OnHexTouchedSelected(hexTouched);

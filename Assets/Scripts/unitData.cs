@@ -246,7 +246,14 @@ public class unitData : MonoBehaviour {
                     shieldObj.SetActive(false);
                 }
                 GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("devUnit_cloaked");
-            }
+            } else
+            {
+                if (shielded)
+                {
+                    shieldObj.SetActive(true);
+                }
+                GetComponent<SpriteRenderer>().sprite = uncloakedSprite;
+            } 
         }
         else {
             if (shielded)
