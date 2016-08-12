@@ -14,8 +14,13 @@ public class mortarData : unitData
         unitName = "Mortar";
         unitDesc = "Fires big long range shells";
         activeName = "Bombard";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_mortar");
+    }
     public override void OnHexTouchedSelected(GameObject hexTouched)
     {
         base.OnHexTouchedSelected(hexTouched);

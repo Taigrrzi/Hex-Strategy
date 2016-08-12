@@ -12,8 +12,13 @@ public class conduitData : unitData
         baseMoveSpeed = 1;
         unitName = "Conduit";
         unitDesc = "Transfers damage to healthiest ally";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_conduit");
+    }
     public override void OnTakingDamage(int damage, bool uncloak,GameObject dealer)
     {
         if (mapControl.globalMap.explosionInProgress)

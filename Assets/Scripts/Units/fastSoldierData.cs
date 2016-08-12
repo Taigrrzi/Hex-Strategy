@@ -11,5 +11,11 @@ public class fastSoldierData : unitData
         baseMoveSpeed = 2;
         unitName = "Fast Soldier";
         unitDesc = "Smaller but faster";
+        StartSprite();
+    }
+
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_fastSoldier");
     }
 }

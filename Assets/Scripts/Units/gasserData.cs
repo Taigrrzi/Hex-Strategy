@@ -16,8 +16,13 @@ public class gasserData : unitData
         gasDamage = 1;
         unitName = "Gasser";
         unitDesc = "Deals damage to nearby enemies at the end of the turn";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_gasser");
+    }
     public override void OnTurnEnd()
     {
         base.OnTurnEnd();

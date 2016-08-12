@@ -16,8 +16,13 @@ public class investigatorData : unitData
         unitName = "Investigator";
         unitDesc = "Figures Stuff Out";
         activeName = "Uncloak";
+        StartSprite();
     }
 
+    public override void StartSprite()
+    {
+        uncloakedSprite = Resources.Load<Sprite>("devUnit_investigator");
+    }
     public override void OnHexTouchedSelected(GameObject hexTouched)
     {
         base.OnHexTouchedSelected(hexTouched);
