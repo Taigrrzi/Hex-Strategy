@@ -308,6 +308,7 @@ public class unitData : MonoBehaviour {
         {
             mapControl.globalMap.Team1Units.Remove(gameObject);
         }
+        mapControl.globalMap.GlobalDeath();
         Destroy(gameObject);
     }
 

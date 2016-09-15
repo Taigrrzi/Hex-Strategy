@@ -14,10 +14,12 @@ public class mapControl : Control {
     float offsetX = 0.858f;
     float offsetY = 0.745f;
     public hexData[,] hexes;
+    public GameObject hotSeatBlocker;
     GameObject hoveredHex;
     public GameObject hexOutline;
     public int Team0StartUnitAmount;
     public int Team1StartUnitAmount;
+    public int gameWinner;
     public List<GameObject> Team0Units;
     public List<GameObject> Team1Units;
 //    public int gamePhase;
@@ -42,6 +44,7 @@ public class mapControl : Control {
 
     // Use this for initialization
     void Awake () {
+        hotSeatBlocker.SetActive(false);
         damageQueue = new List<damage>();
         globalMap = this;
         hexes = new hexData[mapWidth + 2, mapHeight];
@@ -232,6 +235,27 @@ public class mapControl : Control {
     */
 
 
+    public void GlobalDeath()
+    {
+        if (Team0Units.Count == 0)
+        {
+            if (Team1Units.Count == 0)
+            {
+                gamePhase = 2;
+                gameWinner = -1;
+            } else
+            {
+                gamePhase = 2;
+                gameWinner = 1;
+            }
+        }
+        else if (Team1Units.Count == 0)
+        {
+            gamePhase = 2;
+            gameWinner = 0;
+        }
+    }
+
     GameObject RandomHexInBounds(HashSet<GameObject> hexBound)
     { // Some Checking to do when i can be arsed. ie stop infinite loop if bound is full
         GameObject[] tempArray = new GameObject[hexBound.Count];
@@ -312,6 +336,7 @@ public class mapControl : Control {
             {
                 if (Input.GetMouseButtonUp(0) || Input.touches[0].phase == TouchPhase.Ended)
                 {
+                    Debug.Log("HOTFALSE");
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
                     if (hit.collider != null)
@@ -328,6 +353,7 @@ public class mapControl : Control {
             {
                 if (Input.GetMouseButtonUp(0) || Input.touches[0].phase == TouchPhase.Ended)
                 {
+                    Debug.Log("HOTFALSE");
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                     RaycastHit2D hit = Physics2D.GetRayIntersection(ray, Mathf.Infinity);
                     if (hit.collider != null)
@@ -465,6 +491,7 @@ public class mapControl : Control {
 
     public void EndTurnButtonPressed()
     {
+        hotSeatBlocker.SetActive(true);
         turnAmount++;
         ClearHighlights();
         if (gamePhase == 0) {
